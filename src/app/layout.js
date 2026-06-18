@@ -3,6 +3,7 @@ import "./globals.css";
 import NextThemeProvider from "@/providers/NextThemeProvider";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
           <Navbar />
           <main className="flex-1 overflow-hidden">{children}</main>
           <Footer />
+          <Toaster />
         </NextThemeProvider>
       </body>
     </html>
