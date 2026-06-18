@@ -1,9 +1,12 @@
+import Container from "../shared/Container";
 
 
 const Footer = () => {
     return (
         <section>
-            Footer
+            <Container>
+                Footer
+            </Container>
         </section>
     );
 };

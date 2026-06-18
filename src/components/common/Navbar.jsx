@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { navLinks } from "@/lib/navLinks";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoLogInSharp, IoLogOutSharp } from "react-icons/io5";
 import { AiOutlineMenu } from "react-icons/ai";
 import { useState, useEffect } from "react";
-import { MdOutlineFileDownload } from "react-icons/md";
 import Logo from "../ui/Logo";
 import Container from "../shared/Container";
 import { ThemeSwitch } from "../shared/ThemeSwitch";
@@ -92,11 +91,10 @@ const Navbar = () => {
                                             <Link
                                                 onClick={(e) => handleScroll(e, nav.path)}
                                                 href={nav.path}
-                                                className={`text-sm font-medium transition-colors duration-300 relative py-1 block ${
-                                                    isActive
-                                                        ? "text-purple-500 font-semibold"
-                                                        : "text-muted hover:text-accent"
-                                                }`}
+                                                className={`text-sm font-medium transition-colors duration-300 relative py-1 block ${isActive
+                                                    ? "text-purple-500 font-semibold"
+                                                    : "text-muted hover:text-accent"
+                                                    }`}
                                             >
                                                 {nav.name}
                                                 {/* Animated underscore active status marker line bar */}
@@ -111,7 +109,10 @@ const Navbar = () => {
 
                             <div className="flex items-center gap-5">
                                 <ThemeSwitch />
-                                <BaseButton animated className={'hidden md:inline-flex'} text={'Download CV'} rightIcon={<MdOutlineFileDownload className="text-2xl" />} />
+                                <div className="flex gap-3">
+                                    <BaseButton animated className={'hidden md:inline-flex'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
+                                    <BaseButton animated className={'hidden md:inline-flex'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
+                                </div>
                                 <button
                                     aria-label={open ? "Close Menu" : "Open Menu"}
                                     aria-expanded={open}
@@ -145,19 +146,19 @@ const Navbar = () => {
                                                 <Link
                                                     onClick={(e) => handleScroll(e, nav.path)}
                                                     href={nav.path}
-                                                    className={`text-sm font-medium transition-all duration-200 w-full block p-2.5 rounded-xl ${
-                                                        isActive
-                                                            ? "bg-purple-500/10 text-purple-400 font-semibold border-l-4 border-purple-500 pl-3"
-                                                            : "text-muted hover:text-accent hover:bg-neutral-500/5"
-                                                    }`}
+                                                    className={`text-sm font-medium transition-all duration-200 w-full block p-2.5 rounded-xl ${isActive
+                                                        ? "bg-purple-500/10 text-purple-400 font-semibold border-l-4 border-purple-500 pl-3"
+                                                        : "text-muted hover:text-accent hover:bg-neutral-500/5"
+                                                        }`}
                                                 >
                                                     {nav.name}
                                                 </Link>
                                             </li>
                                         );
                                     })}
-                                    <div className="pt-2">
-                                        <BaseButton onClick={handleDownloadCV} animated className={'md:hidden inline-flex w-full justify-center'} text={'Download CV'} rightIcon={<MdOutlineFileDownload className="text-2xl" />} />
+                                    <div className="flex gap-3 pt-2">
+                                        <BaseButton animated className={'md:hidden inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
+                                        <BaseButton animated className={'md:hidden inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
                                     </div>
                                 </ul>
                             </div>
