@@ -103,7 +103,7 @@ const Navbar = () => {
                         </div>
 
                         {/* Desktop Navigation Links */}
-                        <ul className="hidden lg:flex lg:gap-10 items-center">
+                        <ul className="hidden lg:flex lg:gap-8 items-center">
                             {links.map((nav) => {
                                 const isActive = activeSection === nav.path;
                                 return (
