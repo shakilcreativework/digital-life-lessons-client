@@ -9,13 +9,13 @@ const Footer = () => {
     return (
         <section className="bg-card py-10">
             <Container>
-                <footer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-10 md:gap-4">
-                    <div className="flex flex-col gap-4 md:col-span-2 lg:col-span-2">
+                <footer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-10 md:gap-4">
+                    <div className="flex flex-col gap-4 md:col-span-2 lg:col-span-3">
                         <Logo />
                         <div>
                             <h3 className="text-muted text-sm">Real stories. Life lessons. Lasting impact.</h3>
                         </div>
-                        <div className="flex gap-4 items-center">
+                        <div className="flex gap-4 mt-3 items-center">
                             <Link href={'/'} className="group transition duration-300">
                                 <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-sm text-muted group-hover:text-[#1DA1F2] transition-colors duration-300">
                                     <FaTwitter className="text-xl" />

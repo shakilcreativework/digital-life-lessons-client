@@ -41,7 +41,7 @@ const Navbar = () => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     const targetId = entry.target.id;
-                    
+
                     // Match the precise path array item that corresponds to the visible section ID
                     const matchedLink = links.find((link) => {
                         const cleanPath = link.path.replace(/^\/#|^\/|^#/, "");
@@ -111,11 +111,10 @@ const Navbar = () => {
                                         <Link
                                             onClick={(e) => handleScroll(e, nav.path)}
                                             href={nav.path}
-                                            className={`text-sm font-medium transition-colors duration-300 relative py-1 block ${
-                                                isActive
-                                                    ? "text-purple-500 font-semibold"
-                                                    : "text-muted hover:text-accent"
-                                            }`}
+                                            className={`text-sm font-medium transition-colors duration-300 relative py-1 block ${isActive
+                                                ? "text-purple-500 font-semibold"
+                                                : "text-muted hover:text-accent"
+                                                }`}
                                         >
                                             {nav.name}
                                             {/* Animated underscore active status marker line bar */}
@@ -128,11 +127,15 @@ const Navbar = () => {
                             })}
                         </ul>
 
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center md:gap-3 lg:gap-5">
                             <ThemeSwitch />
                             <div className="flex gap-3">
-                                <BaseButton animated className={'hidden md:inline-flex'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
-                                <BaseButton animated className={'hidden md:inline-flex'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
+                                <Link href={'/login'}>
+                                    <BaseButton animated className={'hidden md:inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
+                                </Link>
+                                <Link href={'/register'}>
+                                    <BaseButton animated animatedSpanOne={'animate-spin'} className={'hidden md:inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
+                                </Link>
                             </div>
                             <button
                                 aria-label={open ? "Close Menu" : "Open Menu"}
@@ -152,11 +155,10 @@ const Navbar = () => {
                     </div>
 
                     {/* Mobile Collapsible Dropdown Drawer */}
-                    <div className={`grid transition-all duration-300 ease-in-out lg:hidden w-full ${
-                        open
-                            ? "grid-rows-[1fr] opacity-100 mt-4 pb-2"
-                            : "grid-rows-[0fr] opacity-0 pointer-events-none"
-                    }`}>
+                    <div className={`grid transition-all duration-300 ease-in-out lg:hidden w-full ${open
+                        ? "grid-rows-[1fr] opacity-100 mt-4 pb-2"
+                        : "grid-rows-[0fr] opacity-0 pointer-events-none"
+                        }`}>
                         <div className="overflow-hidden">
                             <ul className="space-y-3 flex flex-col pt-2 border-muted/10">
                                 {links.map((nav) => {
@@ -166,11 +168,10 @@ const Navbar = () => {
                                             <Link
                                                 onClick={(e) => handleScroll(e, nav.path)}
                                                 href={nav.path}
-                                                className={`text-sm font-medium transition-all duration-200 w-full block p-2.5 rounded-xl ${
-                                                    isActive
-                                                        ? "bg-purple-500/10 text-purple-400 font-semibold border-l-4 border-purple-500 pl-3"
-                                                        : "text-muted hover:text-accent hover:bg-neutral-500/5"
-                                                }`}
+                                                className={`text-sm font-medium transition-all duration-200 w-full block p-2.5 rounded-xl ${isActive
+                                                    ? "bg-purple-500/10 text-purple-400 font-semibold border-l-4 border-purple-500 pl-3"
+                                                    : "text-muted hover:text-accent hover:bg-neutral-500/5"
+                                                    }`}
                                             >
                                                 {nav.name}
                                             </Link>
@@ -178,8 +179,12 @@ const Navbar = () => {
                                     );
                                 })}
                                 <div className="flex gap-3 pt-2">
-                                    <BaseButton animated className={'md:hidden inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
-                                    <BaseButton animated className={'md:hidden inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
+                                    <Link href={'/login'}>
+                                        <BaseButton animated className={'md:hidden inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
+                                    </Link>
+                                    <Link href={'/register'}>
+                                        <BaseButton animated animatedSpanOne={'animate-spin'} className={'md:hidden inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
+                                    </Link>
                                 </div>
                             </ul>
                         </div>
