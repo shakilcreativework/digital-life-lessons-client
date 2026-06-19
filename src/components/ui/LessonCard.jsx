@@ -6,27 +6,27 @@ import { BiCommentDetail } from "react-icons/bi";
 import { FiBookmark } from "react-icons/fi";
 
 // Reusable card accepting static props mimicking the UI layout
-const LessonCard = ({ 
-  category, 
-  title, 
-  authorName, 
-  authorImg, 
-  ImageSrc, 
-  likes, 
+const LessonCard = ({
+  category,
+  title,
+  authorName,
+  authorImg,
+  ImageSrc,
+  likes,
   comments,
   badgeColorClass = "text-muted font-medium bg-background py-1"
 }) => {
   return (
     <div className="bg-card border border-border hover:border-border-hover rounded-2xl p-4 flex flex-col justify-between h-100 shadow-sm transition-all duration-300 group hover:-translate-y-1">
-      
+
       <div>
         {/* Card Artwork Wrapper */}
-        <div className="relative w-full h-50 rounded-xl overflow-hidden bg-surface mb-4">
+        <div className="relative w-full h-48 rounded-xl overflow-hidden bg-surface mb-4">
           <Image
             src={ImageSrc}
             alt={title}
-            width={500}
-            height={400}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
             priority
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -45,14 +45,14 @@ const LessonCard = ({
 
       {/* Footer Area: Author and Performance Metrics */}
       <div className="space-y-4 pt-4">
-        
+
         {/* Author Avatar Group */}
         <div className="flex items-center gap-2">
           <div className="relative w-7 h-7 rounded-full overflow-hidden border border-border">
-            <Image 
-              src={authorImg} 
-              alt={authorName} 
-              fill 
+            <Image
+              src={authorImg}
+              alt={authorName}
+              fill
               sizes="40px"
               className="object-cover"
             />
@@ -63,7 +63,7 @@ const LessonCard = ({
         {/* Action Button Row */}
         <div className="flex items-center justify-between text-muted text-xs font-medium pt-1">
           <div className="flex items-center gap-4">
-            
+
             {/* Likes */}
             <button className="flex items-center gap-1.5 hover:text-danger transition-colors">
               <AiOutlineHeart className="w-4 h-4" />

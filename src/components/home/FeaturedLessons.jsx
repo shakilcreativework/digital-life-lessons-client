@@ -102,8 +102,6 @@ const FeaturedLessons = () => {
 
     return (
         <section className="bg-background py-16 px-6 md:px-12 w-full transition-colors duration-300">
-            {/* 1. Added explicit horizontal padding (px-8) here to provide inner space for absolute navigation items */}
-            {/* <div className="max-w-7xl mx-auto relative px-8"> */}
             <div className="relative px-6">
 
                 {/* Header Layout */}
@@ -157,7 +155,7 @@ const FeaturedLessons = () => {
                         1280: { slidesPerView: 4 }, // Shows exactly 4 full cards safely inside the boundary layout 
                     }}
                     // 2. Changed "!overflow-visible" to standard default overflow configuration
-                    className="w-full py-4"
+                    className="w-full"
                 >
                     {lessonsData.map((lesson) => (
                         <SwiperSlide key={lesson.id} className="h-auto">
@@ -174,7 +172,7 @@ const FeaturedLessons = () => {
                         </SwiperSlide>
                     ))}
                 </Swiper>
-
+                
             </div>
         </section>
     );
