@@ -9,7 +9,7 @@ const RealPeople = () => {
         <section className="py-20 md:py-24">
             <Container>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-4 lg:gap-6">
-                    <div className="sm:col-span-2 md:col-span-3 lg:col-span-2 space-y-4">
+                    <div className="mb-10 lg:mb-0 sm:col-span-2 md:col-span-3 lg:col-span-2 space-y-4">
                         <div>
                             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">Real People. <br className="hidden md:hidden lg:block" /> Real Impact.</h1>
                         </div>
@@ -33,7 +33,7 @@ const RealPeople = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
+                    <div className="space-y-4  p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
                         <div className="space-y-4">
                             <FaQuoteLeft className="text-green-600 text-2xl" />
                             <h4 className="text-muted line-clamp-5">The stories here remind me that I&apos;m not alone. Every lesson pushes me to be better.</h4>
@@ -53,7 +53,7 @@ const RealPeople = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
+                    <div className="space-y-4  p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
                         <div className="space-y-4">
                             <FaQuoteLeft className="text-pink-600 text-2xl" />
                             <h4 className="text-muted line-clamp-5">I&apos;ve learned more from real people&apos;s experiences than any book or course.</h4>
@@ -73,7 +73,7 @@ const RealPeople = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
+                    <div className="space-y-4  p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
                         <div className="space-y-4">
                             <FaQuoteLeft className="text-blue-600 text-2xl" />
                             <h4 className="text-muted line-clamp-5">This community is pure motivation and positive energy</h4>
