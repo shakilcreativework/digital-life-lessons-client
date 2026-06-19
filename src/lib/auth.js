@@ -20,6 +20,18 @@ export const auth = betterAuth({
     },
   },
   database: mongodbAdapter(db, {
-    client
+    client,
   }),
+  user: {
+    additionalFields: {
+      isPremium: {
+        type: "boolean",
+        defaultValue: false,
+      },
+      role: {
+        type: "string",
+        defaultValue: "user", // "user" or "admin"
+      },
+    },
+  },
 });
