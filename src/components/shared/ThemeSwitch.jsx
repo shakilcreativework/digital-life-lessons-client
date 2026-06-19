@@ -103,13 +103,12 @@ export function ThemeSwitch() {
         items-center
         justify-center
         gap-1
-        w-10
-        h-10
         p-2
         rounded-full
         text-muted
-        hover:bg-card
+        bg-card
         hover:text-nav-icon-hover
+        relative w-10 h-10 shadow-2xs
       "
     >
       {isDark ? (

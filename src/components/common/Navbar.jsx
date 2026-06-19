@@ -10,13 +10,14 @@ import Container from "../shared/Container";
 import { ThemeSwitch } from "../shared/ThemeSwitch";
 import BaseButton from "../ui/BaseButton";
 import { authClient } from "@/lib/auth-client";
+import { CustomTrigger } from "../ui/CustomTrigger";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
     // Initialize with your home path so a link is styled active immediately on load
     const [activeSection, setActiveSection] = useState("/");
     const links = navLinks;
-    const {data: session, error} = authClient.useSession();
+    const { data: session, error } = authClient.useSession();
     console.log(session?.user);
 
     const handleMenu = () => {
@@ -130,16 +131,30 @@ const Navbar = () => {
                             })}
                         </ul>
 
-                        <div className="flex items-center md:gap-3 lg:gap-5">
-                            <ThemeSwitch />
-                            <div className="flex gap-3">
-                                <Link href={'/login'}>
-                                    <BaseButton animated className={'hidden md:inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
-                                </Link>
-                                <Link href={'/register'}>
-                                    <BaseButton animated animatedSpanOne={'animate-spin'} className={'hidden md:inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
-                                </Link>
+                        <div className="flex gap-4 md:gap-5 items-center">
+                            <div className="flex items-center md:gap-3 lg:gap-5">
+                                <ThemeSwitch />
                             </div>
+
+                            {
+                                session?.user
+                                    ?
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <CustomTrigger />
+                                        </div>
+                                    </div>
+                                    :
+                                    <div className="flex gap-3">
+                                        <Link href={'/login'}>
+                                            <BaseButton animated className={'hidden md:inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
+                                        </Link>
+                                        <Link href={'/register'}>
+                                            <BaseButton animated animatedSpanOne={'animate-spin'} className={'hidden md:inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
+                                        </Link>
+                                    </div>
+                            }
+
                             <button
                                 aria-label={open ? "Close Menu" : "Open Menu"}
                                 aria-expanded={open}
@@ -155,6 +170,7 @@ const Navbar = () => {
                                 </div>
                             </button>
                         </div>
+
                     </div>
 
                     {/* Mobile Collapsible Dropdown Drawer */}
