@@ -7,7 +7,6 @@
 
 :root {
   --background: #FAF8F3;
-  --background-secondary: #1E1E1E;
   --surface: #F5F1EA;
   --card: #FFFFFF;
 
@@ -31,7 +30,6 @@
 
 .dark {
   --background: #1E1E1E;
-  --background-secondary: #FAF8F3;
   --surface: #252526;
   --card: #2D2D30;
 
@@ -55,7 +53,6 @@
 
 @theme {
   --color-background: var(--background);
-  --color-background-secondary: var(--background-secondary);
   --color-surface: var(--surface);
   --color-card: var(--card);
 
