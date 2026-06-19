@@ -1,4 +1,5 @@
 "use client";
+import FeaturedLessons from "@/components/home/FeaturedLessons";
 import FreeTrial from "@/components/home/FreeTrial";
 import InfoSesson from "@/components/home/InfoSesson";
 import RealPeople from "@/components/home/RealPeople";
@@ -14,6 +15,7 @@ export default function Home() {
     <main>
       <HeroSlider />
       <InfoSesson />
+      <FeaturedLessons />
       <FreeTrial />
       <RealPeople />
     </main>
