@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Container from "../shared/Container";
 import Logo from "../ui/Logo";
-import { FaDiscord, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaDiscord, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { company, explore, support } from "@/lib/navLinks";
+import { FaXTwitter } from "react-icons/fa6";
 
 
 const Footer = () => {
@@ -18,7 +19,7 @@ const Footer = () => {
                         <div className="flex gap-4 mt-3 items-center">
                             <Link href={'/'} className="group transition duration-300">
                                 <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-sm text-muted group-hover:text-[#1DA1F2] transition-colors duration-300">
-                                    <FaTwitter className="text-xl" />
+                                    <FaXTwitter className="text-xl" />
                                 </div>
                             </Link>
 
