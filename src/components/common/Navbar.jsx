@@ -18,7 +18,7 @@ const Navbar = () => {
     const [open, setOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("/");
     const { data: session, error } = authClient.useSession();
-    console.log(session?.user);
+    // console.log(session?.user);
 
     // if user active and get from session then show public and private route
     const visibleLinks = navLinks.filter(nav => {
@@ -123,7 +123,7 @@ const Navbar = () => {
                                             href={nav.path}
                                             className={`text-sm font-medium transition-colors duration-300 relative py-1 block ${isActive
                                                 ? "text-purple-500 font-semibold"
-                                                : "text-muted hover:text-accent"
+                                                : "text-muted hover:text-secondary"
                                                 }`}
                                         >
                                             {nav.name}
@@ -169,7 +169,7 @@ const Navbar = () => {
                                 aria-label={open ? "Close Menu" : "Open Menu"}
                                 aria-expanded={open}
                                 onClick={handleMenu}
-                                className="block lg:hidden rounded-full bg-card hover:text-accent p-2"
+                                className="block lg:hidden rounded-full bg-card hover:text-secondary p-2"
                             >
                                 <div className="relative w-6 h-6 flex justify-center items-center rounded-full shadow-2xs">
                                     {open ? (
@@ -199,7 +199,7 @@ const Navbar = () => {
                                                 href={nav.path}
                                                 className={`text-sm font-medium transition-all duration-200 w-full block p-2.5 rounded-xl ${isActive
                                                     ? "bg-purple-500/10 text-purple-400 font-semibold border-l-4 border-purple-500 pl-3"
-                                                    : "text-muted hover:text-accent hover:bg-neutral-500/5"
+                                                    : "text-muted hover:text-secondary hover:bg-neutral-500/5"
                                                     }`}
                                             >
                                                 {nav.name}

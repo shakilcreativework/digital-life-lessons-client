@@ -25,7 +25,8 @@ const LessonCard = ({
           <Image
             src={ImageSrc}
             alt={title}
-            fill
+            width={500}
+            height={400}
             priority
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -52,6 +53,7 @@ const LessonCard = ({
               src={authorImg} 
               alt={authorName} 
               fill 
+              sizes="40px"
               className="object-cover"
             />
           </div>
