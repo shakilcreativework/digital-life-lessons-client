@@ -33,7 +33,7 @@ const RealPeople = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="space-y-4  p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
+                    <div className="space-y-4 sm:min-h-80 p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
                         <div className="space-y-4">
                             <FaQuoteLeft className="text-green-600 text-2xl" />
                             <h4 className="text-muted line-clamp-5">The stories here remind me that I&apos;m not alone. Every lesson pushes me to be better.</h4>
@@ -53,7 +53,7 @@ const RealPeople = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="space-y-4  p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
+                    <div className="space-y-4 sm:min-h-80 p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
                         <div className="space-y-4">
                             <FaQuoteLeft className="text-pink-600 text-2xl" />
                             <h4 className="text-muted line-clamp-5">I&apos;ve learned more from real people&apos;s experiences than any book or course.</h4>
@@ -73,7 +73,7 @@ const RealPeople = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="space-y-4  p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
+                    <div className="space-y-4 sm:min-h-80 p-4 xl:p-6 bg-card rounded-2xl flex flex-col border border-border justify-between">
                         <div className="space-y-4">
                             <FaQuoteLeft className="text-blue-600 text-2xl" />
                             <h4 className="text-muted line-clamp-5">This community is pure motivation and positive energy</h4>
