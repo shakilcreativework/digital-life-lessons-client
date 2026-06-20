@@ -6,9 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function CustomTrigger() {
-    const { data: session, error } = authClient.useSession();
+    const { data: session } = authClient.useSession();
+    // console.log(session?.user?.role);
+    const isAdmin = session?.user?.role === "admin";
+
     const router = useRouter();
-    // console.log(session);
     const logOut = async () => {
         await authClient.signOut({
             fetchOptions: {
@@ -53,7 +55,7 @@ export function CustomTrigger() {
                         id="profile"
                         textValue="Profile"
                         as={Link}
-                        href="/dashboard/profile"
+                        href={`${isAdmin ? '/dashboard/admin/profile' : '/dashboard/profile'}`}
                     >
                         <Label className="text-muted">Profile</Label>
                     </Dropdown.Item>
@@ -61,7 +63,7 @@ export function CustomTrigger() {
                         id="dashboard"
                         textValue="Dashboard"
                         as={Link}
-                        href="/dashboard"
+                        href={`${isAdmin ? '/dashboard/admin' : '/dashboard'}`}
                     >
                         <Label className="text-muted">Dashboard</Label>
                     </Dropdown.Item>

@@ -12,13 +12,13 @@ import BaseButton from "../ui/BaseButton";
 import { authClient } from "@/lib/auth-client";
 import { CustomTrigger } from "../ui/CustomTrigger";
 import { MdWorkspacePremium } from "react-icons/md";
-import { div } from "framer-motion/client";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("/");
-    const { data: session, error } = authClient.useSession();
-    // console.log(session?.user);
+    const { data: session } = authClient.useSession();
+    // console.log(session?.user?.role);
+    // const isAdmin = session?.user?.role === "admin";
 
     // if user active and get from session then show public and private route
     const visibleLinks = navLinks.filter(nav => {
