@@ -53,7 +53,7 @@ export function CustomTrigger() {
                         id="profile"
                         textValue="Profile"
                         as={Link}
-                        href="/profile"
+                        href="/dashboard/profile"
                     >
                         <Label className="text-muted">Profile</Label>
                     </Dropdown.Item>
