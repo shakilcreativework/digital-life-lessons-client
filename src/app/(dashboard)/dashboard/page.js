@@ -149,7 +149,7 @@ export default function DashboardHomePage({ sessionData = null }) {
 
           {/* Fully Fluid Responsive Vector Wrapper */}
           <div className="w-full overflow-hidden relative pt-2">
-            <div className="w-full min-w-[320px] aspect-[16/7] lg:aspect-auto lg:h-44">
+            <div className="w-full min-w-[320px] aspect-16/7 lg:aspect-auto lg:h-44">
               <svg 
                 viewBox={`0 0 ${width} ${height}`} 
                 preserveAspectRatio="none"
