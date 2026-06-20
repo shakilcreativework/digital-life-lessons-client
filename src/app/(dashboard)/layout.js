@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
 
 const USER_NAV_ITEMS = [
   { name: "Overview", path: "/dashboard", icon: "📊" },
@@ -22,29 +23,69 @@ const ADMIN_NAV_ITEMS = [
   { name: "Admin Profile", path: "/dashboard/admin/profile", icon: "⚙️" },
 ];
 
-export default function DashboardLayout({ children, userSession = null }) {
+export default function DashboardLayout({ children }) {
+  const { data: session, isPending } = authClient.useSession();
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const activeUser = userSession || {
-    name: "Shakil Ahmed",
-    email: "shakil@creativework.com",
-    role: "admin", 
-    isPremium: true,
-    photoURL: ""
-  };
+  // Safely extract active user properties from the active auth session
+  const activeUser = session?.user
+    ? {
+        name: session.user.name,
+        email: session.user.email,
+        role: session.user.role,
+        isPremium: session.user.isPremium,
+        photoURL: session.user.image,
+      }
+    : null;
 
-  const isAdmin = activeUser.role === "admin";
+  // CRITICAL SECURITY FIX: Strict check for "admin" string value to prevent truthy string bypass loops
+  const isAdmin = activeUser?.role === "admin";
   const targetNavigationList = isAdmin ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS;
+
+  // Secure Layout Guard: If a standard user tries to view an /admin path, intercept and block
+  const isTargetingAdminRoute = pathname.startsWith("/dashboard/admin");
+  const isAccessDenied = isTargetingAdminRoute && !isAdmin;
 
   const handleLogout = () => {
     console.log("Terminating session tokens...");
     router.push("/login");
   };
 
+  // Prevent hydration flashing shifts while the authentication hook resolves
+  if (isPending) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col lg:flex-row antialiased animate-pulse">
+        <aside className="hidden lg:block w-60 shrink-0 h-screen sticky top-0 border-r border-border/60 bg-card/95" />
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full" />
+      </div>
+    );
+  }
+
+  // Elegant error fallback container for unauthorized standard user penetration attempts
+  if (isAccessDenied) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 text-center">
+        <div className="max-w-md w-full space-y-4 p-6 bg-card border border-border/60 rounded-2xl shadow-xs">
+          <div className="text-2xl">🚨</div>
+          <h2 className="text-base font-bold text-foreground">Access Level Violation</h2>
+          <p className="text-xs text-muted">
+            This module is restricted to platform administrators. Your workspace account does not have authorization flags for this route.
+          </p>
+          <Link href="/dashboard" className="inline-block text-xs font-bold px-4 py-2 bg-primary text-white rounded-xl">
+            Return to Dashboard Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const renderSidebarContent = () => (
-    <div className="flex flex-col h-full bg-card/95 backdrop-blur-md border-r border-border/60 text-foreground transition-all duration-300">
+    <div
+      suppressHydrationWarning
+      className="flex flex-col h-full bg-card/95 backdrop-blur-md border-r border-border/60 text-foreground transition-all duration-300"
+    >
       {/* Identity Branding Container */}
       <div className="p-6 border-b border-border/50 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
@@ -55,11 +96,14 @@ export default function DashboardLayout({ children, userSession = null }) {
       </div>
 
       {/* Nav Content Box */}
-      <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto scrollbar-none" aria-label="Dashboard Layout Main Sub-navigation">
+      <nav
+        className="flex-1 py-6 px-4 space-y-1 overflow-y-auto scrollbar-none"
+        aria-label="Dashboard Layout Main Sub-navigation"
+      >
         <div className="text-[10px] font-bold uppercase tracking-widest text-muted/80 px-3 mb-3 block">
           {isAdmin ? "Admin Controls" : "User Workspace"}
         </div>
-        
+
         {targetNavigationList.map((item) => {
           const isActive = pathname === item.path;
           return (
@@ -80,7 +124,9 @@ export default function DashboardLayout({ children, userSession = null }) {
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
-              <span className="text-base shrink-0" aria-hidden="true">{item.icon}</span>
+              <span className="text-base shrink-0" aria-hidden="true">
+                {item.icon}
+              </span>
               <span className="flex-1 truncate">{item.name}</span>
             </Link>
           );
@@ -90,42 +136,50 @@ export default function DashboardLayout({ children, userSession = null }) {
       {/* Profile/Footer Anchor Grid */}
       <div className="p-4 border-t border-border/50 bg-surface/30 space-y-3">
         <div className="flex items-center gap-3 p-1">
-          <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
-            {activeUser.photoURL ? (
-              <Image width={36} height={36} priority src={activeUser.photoURL} alt={activeUser.name} className="w-full h-full object-cover" />
+          <div className="w-9 h-9 rounded-full bg-surface border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+            {activeUser?.photoURL ? (
+              <Image
+                width={36}
+                height={36}
+                priority
+                src={activeUser.photoURL}
+                alt={activeUser.name || "User Thumbnail"}
+                className="w-full h-full object-cover"
+              />
             ) : (
-              <span className="text-xs font-bold text-muted">{activeUser.name.charAt(0)}</span>
+              <span className="text-xs font-bold text-muted">
+                {activeUser?.name?.charAt(0) || "U"}
+              </span>
             )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1">
-              <p className="text-xs font-bold text-foreground truncate">{activeUser.name}</p>
-              {activeUser.isPremium && (
+              <p className="text-xs font-medium text-foreground truncate">
+                {activeUser?.name || "Active Session"}
+              </p>
+              {activeUser?.isPremium && !isAdmin && (
                 <span className="text-[9px] px-1.5 py-0.2 font-black tracking-wide rounded-md bg-secondary/10 text-secondary border border-secondary/20 shrink-0">
                   PRO
                 </span>
               )}
             </div>
-            <p className="text-[10px] text-muted truncate">{activeUser.email}</p>
+            <p className="text-[10px] text-muted truncate">
+              {activeUser?.email}
+            </p>
           </div>
         </div>
-
-        <button
-          onClick={handleLogout}
-          className="w-full py-2 px-4 rounded-xl bg-surface border border-border/80 hover:border-primary/30 hover:text-primary font-bold text-[11px] tracking-wider uppercase transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
-        >
-          Sign Out
-        </button>
       </div>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row antialiased selection:bg-primary/20">
-      
       {/* MOBILE APPLICATION HEADER BANNER */}
       <header className="lg:hidden w-full h-14 bg-card/80 backdrop-blur-md border-b border-border/50 px-4 flex items-center justify-between sticky top-0 z-40">
-        <Link href="/" className="font-black text-xs tracking-wider bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+        <Link
+          href="/"
+          className="font-black text-xs tracking-wider bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent"
+        >
           DIGITAL LIFE
         </Link>
         <button
@@ -134,7 +188,14 @@ export default function DashboardLayout({ children, userSession = null }) {
           aria-expanded={isMobileMenuOpen}
           aria-label="Toggle navigation dynamic panel drawer menu"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="w-4 h-4"
+          >
             {isMobileMenuOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
             ) : (
@@ -185,7 +246,6 @@ export default function DashboardLayout({ children, userSession = null }) {
           {children}
         </motion.div>
       </main>
-
     </div>
   );
 }

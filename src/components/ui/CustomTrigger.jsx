@@ -57,6 +57,14 @@ export function CustomTrigger() {
                     >
                         <Label className="text-muted">Profile</Label>
                     </Dropdown.Item>
+                    <Dropdown.Item
+                        id="dashboard"
+                        textValue="Dashboard"
+                        as={Link}
+                        href="/dashboard"
+                    >
+                        <Label className="text-muted">Dashboard</Label>
+                    </Dropdown.Item>
                     <Dropdown.Item id="logout" textValue="Logout" variant="danger">
                         <div onClick={logOut} className="flex w-full items-center justify-between gap-2">
                             <Label>Log Out</Label>
