@@ -18,6 +18,7 @@ const Navbar = () => {
     const [open, setOpen] = useState(false);
     const pathname = usePathname(); // 🎯 Tracks current URL path precisely
     const { data: session } = authClient.useSession();
+    console.log(session.user);
 
     // if user active and get from session then show public and private route
     const visibleLinks = navLinks.filter(nav => {
