@@ -297,7 +297,7 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                                 <label 
                                     htmlFor="lesson-image" 
                                     className={cn(
-                                        "group/dropzone relative flex flex-col items-center justify-center w-full min-h-[130px] rounded-xl border border-dashed bg-surface/40 hover:bg-surface transition-all duration-200 cursor-pointer text-center px-6 border-border focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary",
+                                        "group/dropzone relative flex flex-col items-center justify-center w-full min-h-32.5 rounded-xl border border-dashed bg-surface/40 hover:bg-surface transition-all duration-200 cursor-pointer text-center px-6 border-border focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary",
                                         isFormDisabled && "opacity-40 cursor-not-allowed pointer-events-none"
                                     )}
                                 >
@@ -314,7 +314,7 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                                     {selectedFileName ? (
                                         <div className="flex flex-col items-center space-y-2 animate-fadeIn">
                                             <FiCheckCircle className="text-2xl text-green-500" />
-                                            <p className="text-xs font-bold text-foreground line-clamp-1 max-w-[400px]">
+                                            <p className="text-xs font-bold text-foreground line-clamp-1 max-w-100">
                                                 {selectedFileName}
                                             </p>
                                             <span className="text-[10px] text-muted-foreground underline decoration-dotted">Click container to swap resource image</span>
