@@ -93,12 +93,12 @@ const LessonCard = ({ lesson }) => {
         </div>
 
         {/* Dynamic Category Tag */}
-        <span className="inline-block text-xs px-2.5 py-0.5 shadow-xs border border-border rounded-full mb-3 tracking-wide text-primary bg-primary/10 font-medium">
+        <span className="inline-block text-xs px-2.5 py-0.5 shadow-sm rounded-full mb-3 tracking-wide text-secondary bg-background font-medium">
           {category}
         </span>
 
         {/* Title & Optional Description Snippet */}
-        <h3 className="text-base font-bold text-foreground line-clamp-1 leading-snug tracking-tight group-hover:text-primary transition-colors duration-200">
+        <h3 className="text-base font-semibold text-foreground line-clamp-1 leading-snug tracking-tight group-hover:text-secondary transition-colors duration-200">
           {title}
         </h3>
         {description && (
