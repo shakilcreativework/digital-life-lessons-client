@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 export function CustomTrigger() {
     const { data: session } = authClient.useSession();
-    console.log(session?.user);
+    // console.log(session?.user);
     const isAdmin = session?.user?.role === "admin";
 
     const router = useRouter();
