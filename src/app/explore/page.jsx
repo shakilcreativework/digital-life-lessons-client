@@ -8,7 +8,7 @@ const PublicPage = async () => {
     const lessons = await getAllLessons();
 
     return (
-        <main className="py-20">
+        <main className="py-10">
             <Container>
                 {!lessons || lessons.length === 0 ? (
                     <div className="w-full py-12 flex justify-center items-center">
