@@ -22,7 +22,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
 
   const { data: session } = authClient.useSession();
 
-  // Destructure real database keys provided in schema configuration
+  // 1. Destructure core properties safely from the server payload
   const {
     _id = "",
     title = "Untitled Insight Log",
@@ -38,105 +38,120 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
     createdAt = new Date().toISOString(),
   } = lesson || {};
 
-  // Validate user access levels
+  // 2. Validate security credentials and configuration states
   const isAdmin = session?.user?.role === "admin";
   const isPremiumUser = session?.user?.isPremium === true;
   const hasFullAccess = isAdmin || isPremiumUser;
   const isPremiumLesson = accessLevel === "Premium";
   
-  // Guard lock evaluation until mounted on client
+  // Guard visibility mechanics carefully across client builds
   const isLocked = isMounted && isPremiumLesson && !hasFullAccess;
 
-  // Local interaction tracking states
+  // 3. Optimized Local State Management (Fixes Synchronous Cascading Renders)
   const [isLiked, setIsLiked] = useState(false);
-  const [localLikes, setLocalLikes] = useState(likesCount);
+  const [likeOffset, setLikeOffset] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  // Sync state if initial prop changes
-  useEffect(() => {
-    setLocalLikes(likesCount);
-  }, [likesCount]);
+  // Derive final value on-the-fly during render pass to prevent sync cycle traps
+  const currentLikesCount = likesCount + likeOffset;
+
+  // Track parent changes during reconciliation instead of using useEffect loops
+  const [prevLikesCount, setPrevLikesCount] = useState(likesCount);
+  if (likesCount !== prevLikesCount) {
+    setPrevLikesCount(likesCount);
+    setLikeOffset(0); // Reset interactive local adjustments on upstream data refreshes
+  }
 
   const handleLikeClick = (e) => {
     e.preventDefault();
     if (isLocked) return;
-    const nextState = !isLiked;
-    setIsLiked(nextState);
-    setLocalLikes((prev) => (nextState ? prev + 1 : prev - 1));
+    
+    const nextLikedState = !isLiked;
+    setIsLiked(nextLikedState);
+    setLikeOffset((prev) => (nextLikedState ? prev + 1 : prev - 1));
+
     if (onLikeToggle) {
-      onLikeToggle(_id, nextState);
+      onLikeToggle(_id, nextLikedState);
     }
   };
 
   const handleBookmarkClick = (e) => {
     e.preventDefault();
     if (isLocked) return;
-    const nextState = !isBookmarked;
-    setIsBookmarked(nextState);
+
+    const nextBookmarkState = !isBookmarked;
+    setIsBookmarked(nextBookmarkState);
+
     if (onBookmarkToggle) {
-      onBookmarkToggle(_id, nextState);
+      onBookmarkToggle(_id, nextBookmarkState);
     }
   };
 
-  // Safe Date Formatting Pattern for Server Alignment
-  const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  // Safe formatting wrapper designed to prevent server-side string serialization mismatches
+  const getFormattedDate = () => {
+    try {
+      return new Date(createdAt).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch (err) {
+      return "";
+    }
+  };
 
   return (
     <div className="relative bg-card border border-border hover:border-border-hover rounded-2xl p-4 flex flex-col justify-between h-full shadow-xs transition-all duration-300 group hover:-translate-y-1 overflow-hidden">
       
-      {/* Premium Shield Protection Mask Layer */}
+      {/* Dynamic Premium Access Shield Layer */}
       <AnimatePresence>
         {isLocked && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute inset-0 z-20 backdrop-blur-sm bg-[#FAF8F3]/70 dark:bg-[#1E1E1E]/70 flex flex-col items-center justify-center p-6 text-center"
+            transition={{ duration: 0.25, ease: "linear" }}
+            className="absolute inset-0 z-20 backdrop-blur-md bg-[#FAF8F3]/75 dark:bg-[#1E1E1E]/75 flex flex-col items-center justify-center p-6 text-center"
           >
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25, delay: 0.05 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25, delay: 0.02 }}
               className="p-3 bg-primary/10 border border-primary/20 rounded-full text-primary mb-3 shadow-xs animate-pulse"
             >
               <FiLock className="w-6 h-6" aria-hidden="true" />
             </motion.div>
             
             <motion.h4 
-              initial={{ y: 8, opacity: 0 }}
+              initial={{ y: 6, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+              transition={{ duration: 0.2, delay: 0.08 }}
               className="text-base font-bold text-foreground tracking-tight"
             >
               Premium Insight
             </motion.h4>
             
             <motion.p 
-              initial={{ y: 8, opacity: 0 }}
+              initial={{ y: 6, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.15 }}
-              className="text-xs text-muted max-w-55 mt-1.5 leading-normal"
+              transition={{ duration: 0.2, delay: 0.12 }}
+              className="text-xs text-muted max-w-52.5 mt-1.5 leading-normal font-medium"
             >
               Upgrade your membership to unlock this strategy log.
             </motion.p>
             
             <motion.div
-              initial={{ y: 8, opacity: 0 }}
+              initial={{ y: 6, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              className="w-full max-w-45"
+              transition={{ duration: 0.2, delay: 0.16 }}
+              className="w-full max-w-40"
             >
               <BaseButton
                 as="link"
                 href="/pricing"
                 animated
                 animatedSpanOne="animate-ping"
-                className="mt-4 w-full text-xs font-semibold px-4 py-2 bg-primary text-white hover:bg-primary-hover rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
+                className="mt-4 w-full text-xs font-bold px-4 py-2 bg-primary text-white hover:bg-primary-hover rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
               >
                 Unlock Lesson
               </BaseButton>
@@ -145,12 +160,14 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
         )}
       </AnimatePresence>
 
-      {/* Structural Inner Component Layout Wrapper */}
-      <div className={`flex flex-col h-full justify-between ${isLocked ? "select-none pointer-events-none blur-[2px] opacity-40" : ""}`}>
-        
+      {/* Component Core Content Layout Section */}
+      <div 
+        className="flex flex-col h-full justify-between"
+        aria-hidden={isLocked ? "true" : "false"}
+      >
         <div>
-          {/* Main Visual Image Asset Mask */}
-          <div className="relative w-full h-48 rounded-xl overflow-hidden bg-surface mb-4">
+          {/* Layout Container for Graphic Assets */}
+          <div className="relative w-full h-48 rounded-xl overflow-hidden bg-surface mb-4 border border-border/20">
             {image ? (
               <Image
                 src={image}
@@ -162,60 +179,59 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 className="object-fit transition-transform duration-500 group-hover:scale-103"
               />
             ) : (
-              <div className="w-full h-full bg-surface border border-border flex items-center justify-center text-xs text-muted">
+              <div className="w-full h-full bg-surface flex items-center justify-center text-xs text-muted font-medium">
                 No Media Connected
               </div>
             )}
             
-            {/* Structural Access Level Level-Badge Overlay */}
-            <div className="absolute top-3 right-3 z-10">
-              <span className={`text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-md shadow-xs ${
+            {/* Context Badge Overlays */}
+            <div className="absolute top-3 right-3 z-10 select-none">
+              <span className={`text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-md shadow-xs block border ${
                 isPremiumLesson 
-                  ? "bg-primary text-white" 
-                  : "bg-surface border border-border text-foreground"
+                  ? "bg-primary text-white border-transparent" 
+                  : "bg-card border-border text-foreground"
               }`}>
                 {accessLevel}
               </span>
             </div>
           </div>
 
-          {/* Dynamic Category and Emotional Tone Badge Layout Row */}
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="inline-block text-xs px-2.5 py-0.5 rounded-full tracking-wide text-secondary bg-secondary/10 font-semibold">
+          {/* Dynamic Badges Block */}
+          <div className="flex flex-wrap items-center gap-2 mb-3 select-none">
+            <span className="inline-block text-[11px] px-2.5 py-0.5 rounded-full tracking-wide text-secondary bg-secondary/10 font-bold border border-secondary/5">
               {category}
             </span>
             {emotionalTone && (
-              <span className="inline-block text-xs px-2.5 py-0.5 rounded-full tracking-wide text-muted bg-surface border border-border font-medium">
+              <span className="inline-block text-[11px] px-2.5 py-0.5 rounded-full tracking-wide text-muted bg-surface border border-border font-semibold">
                 {emotionalTone}
               </span>
             )}
           </div>
 
-          {/* Primary Text Information Blocks */}
+          {/* Core Text & Metadata Elements */}
           <h3 className="text-base font-bold text-foreground line-clamp-1 leading-snug tracking-tight group-hover:text-primary transition-colors duration-200">
             {title}
           </h3>
           
           {description && (
-            <p className="text-xs text-muted line-clamp-2 mt-2 leading-relaxed">
+            <p className="text-xs text-muted line-clamp-2 mt-2 leading-relaxed font-medium">
               {description}
             </p>
           )}
 
-          {/* Inline Structural Calendar Creation String */}
-          <div className="flex items-center gap-1.5 text-muted mt-3 mb-4">
-            <FiCalendar className="w-3.5 h-3.5 text-muted/80" aria-hidden="true" />
-            <time className="text-[11px] font-medium tracking-wide" dateTime={createdAt}>
-              {formattedDate}
+          <div className="flex items-center gap-1.5 text-muted mt-3 mb-4 select-none">
+            <FiCalendar className="w-3.5 h-3.5 opacity-80" aria-hidden="true" />
+            <time className="text-[11px] font-bold tracking-wide" dateTime={createdAt}>
+              {getFormattedDate()}
             </time>
           </div>
         </div>
 
-        {/* Layout Footer Core Alignment Zone */}
+        {/* Action Controls Alignment Row */}
         <div className="space-y-4 pt-3 border-t border-border/60">
           
-          {/* Author/Creator Identity Card Component Block */}
-          <div className="flex items-center gap-2.5">
+          {/* Identity/Author Branding Frame */}
+          <div className="flex items-center gap-2.5 select-none">
             <div className="relative w-7 h-7 rounded-full overflow-hidden border border-border bg-surface flex items-center justify-center shrink-0">
               {authorImg ? (
                 <Image
@@ -227,28 +243,28 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                   className="object-cover"
                 />
               ) : (
-                <span className="text-[10px] font-bold text-primary uppercase">
+                <span className="text-[10px] font-black text-primary uppercase tracking-wider">
                   {authorName.charAt(0)}
                 </span>
               )}
             </div>
-            <span className="text-xs font-semibold text-foreground truncate">{authorName}</span>
+            <span className="text-xs font-bold text-foreground truncate">{authorName}</span>
           </div>
 
-          {/* Operational Action Trigger Matrix Area */}
+          {/* Metrics & Interaction Matrix Elements */}
           <div className="flex items-center justify-between gap-2 text-muted text-xs font-medium pt-1">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               
-              {/* Interaction Metrics Layout Row: Like Button */}
+              {/* Dynamic Action Trigger: Upvote / Like Toggle */}
               <button
                 onClick={handleLikeClick}
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
-                aria-label={`Like this insight log, current count: ${localLikes}`}
-                className={`flex items-center gap-1.5 py-1 px-1.5 rounded-lg transition-colors focus:outline-hidden ${
+                aria-label={`Like this entry. Core current evaluation aggregate is ${currentLikesCount}`}
+                className={`flex items-center gap-1.5 py-1 px-2 rounded-lg transition-colors focus:outline-hidden ${
                   isLiked 
-                    ? "text-primary bg-primary/5" 
-                    : "hover:text-primary hover:bg-surface"
+                    ? "text-primary bg-primary/5 font-bold" 
+                    : "hover:text-primary hover:bg-surface font-semibold"
                 }`}
               >
                 {isLiked ? (
@@ -256,44 +272,44 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 ) : (
                   <AiOutlineHeart className="w-4 h-4" aria-hidden="true" />
                 )}
-                <span className="font-semibold text-[11px]">{localLikes}</span>
+                <span className="text-[11px] tabular-nums">{currentLikesCount}</span>
               </button>
 
-              {/* Interaction Metrics Layout Row: Comment Marker */}
+              {/* Reflection Indicator Metrics Counter */}
               <div 
-                className="flex items-center gap-1.5 py-1 px-1.5 text-muted/90"
-                aria-label={`Total user reflections: ${CommentsCount}`}
+                className="flex items-center gap-1.5 py-1 px-1.5 font-semibold text-muted/90 select-none"
+                aria-label={`This entry has collected ${CommentsCount} comments`}
               >
                 <BiCommentDetail className="w-4 h-4" aria-hidden="true" />
-                <span className="font-semibold text-[11px]">{CommentsCount}</span>
+                <span className="text-[11px] tabular-nums">{CommentsCount}</span>
               </div>
             </div>
 
-            {/* Trailing Control Matrix Elements */}
-            <div className="flex items-center gap-1.5">
+            {/* Path Links and Secondary Tools Matrix */}
+            <div className="flex items-center gap-2">
               
-              {/* Context Bookmark Button Element */}
+              {/* Interactive Tooling Badge: Bookmark Trigger */}
               <button
                 onClick={handleBookmarkClick}
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
-                aria-label={isBookmarked ? "Remove bookmark from your collection" : "Save this insight to your bookmark collection"}
+                aria-label={isBookmarked ? "Remove this strategy log from saved index" : "Save this insight strategy item into your local library index"}
                 className={`transition-colors p-1.5 rounded-lg border border-transparent focus:outline-hidden ${
                   isBookmarked 
                     ? "text-secondary bg-secondary/5" 
                     : "hover:text-secondary hover:bg-surface"
                 }`}
               >
-                <FiBookmark className={`w-4 h-4 ${isBookmarked ? "fill-secondary stroke-secondary" : ""}`} aria-hidden="true" />
+                <FiBookmark className={`w-4.5 h-4.5 ${isBookmarked ? "fill-secondary stroke-secondary" : ""}`} aria-hidden="true" />
               </button>
 
-              {/* Direct Path Link Navigation Button */}
+              {/* Primary Content Target Anchor Trigger */}
               <Link
                 href={`/explore/${_id}`}
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
-                aria-label={`See full details for lesson titled: ${title}`}
-                className="inline-flex items-center gap-1 text-[11px] font-bold bg-surface hover:bg-border/40 text-foreground border border-border px-3 py-1.5 rounded-lg transition-all"
+                aria-label={`Open interactive dashboard breakdown view for lesson titled: ${title}`}
+                className="inline-flex items-center gap-1 text-[11px] font-bold bg-surface hover:bg-border/40 text-foreground border border-border px-3 py-1.5 rounded-lg transition-all focus:outline-hidden select-none"
               >
                 <span>Details</span>
                 <FiArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
@@ -303,8 +319,8 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
           </div>
 
         </div>
-
       </div>
+
     </div>
   );
 };
