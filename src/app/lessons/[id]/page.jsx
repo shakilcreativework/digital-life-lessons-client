@@ -67,7 +67,7 @@ export default async function DynamicLessonPage({ params }) {
           <span className="text-xs uppercase font-black tracking-widest text-primary mb-2 block">
             Archived Journal Log
           </span>
-          <h1 className="text-3xl font-extrabold tracking-tight">
+          <h1 className="text-3xl font-bold text-foreground">
             Lesson Stream Content
           </h1>
         </div>
