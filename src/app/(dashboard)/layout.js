@@ -125,7 +125,7 @@ export default function DashboardLayout({ children }) {
         })}
       </nav>
 
-      <div className="p-4 border-t border-border/50 bg-surface/30 space-y-3">
+      <div className="p-4 border-t border-border/50 bg-surface/30 space-y-3 mt-auto">
         <div className="flex items-center gap-3 p-1">
           <div className="w-9 h-9 rounded-full bg-surface border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
             {activeUser?.photoURL ? (
@@ -217,7 +217,8 @@ export default function DashboardLayout({ children }) {
         )}
       </AnimatePresence>
 
-      <aside className="hidden lg:block w-60 shrink-0 h-screen sticky top-0 z-30">
+      {/* FIXED HERE: Removed 'sticky top-0 h-screen' and made it self-stretch inside the flex row container */}
+      <aside className="hidden lg:block w-60 shrink-0 self-stretch z-30">
         {renderSidebarContent()}
       </aside>
 
