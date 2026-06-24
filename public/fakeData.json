@@ -1,0 +1,92 @@
+[
+  {
+    "title": "The Fallacy of Constant Productivity and Over-Optimization",
+    "description": "For years, I tracked every minute of my day, trying to optimize my sleep, work blocks, and even leisure time. The breakthrough came when I completely burned out on a Tuesday afternoon. I realized that human beings are ecosystems, not machines. Over-optimization strips away the random moments of boredom where creativity actually grows. True productivity includes deliberate, non-guilt-ridden rest.",
+    "category": "Personal Growth",
+    "emotionalTone": "Realization",
+    "visibility": "Public",
+    "accessLevel": "Free",
+    "download_url": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "Why I Turned Down a Senior Role to Protect My Craftsmanship",
+    "description": "Early in my tech career, I jumped at the first management track position offered to me because of the title and pay bump. Within six months, I was trapped in endless meetings, spreadsheets, and resource allocations, completely removed from the actual building process I loved. I eventually stepped down to a mid-level IC role. The lesson? Never let corporate ladders dictate your personal definition of happiness.",
+    "category": "Career",
+    "emotionalTone": "Realization",
+    "visibility": "Public",
+    "accessLevel": "Premium",
+    "download_url": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "The 2-Minute Rule for Breaking Creative Paralysis",
+    "description": "When staring at a blank canvas or an empty codebase, the friction to start is massive. I developed a rule: commit to working on the task for exactly two minutes. If I want to quit after 120 seconds, I am completely allowed to do so. 95% of the time, the momentum of simply starting breaks the executive dysfunction. Action breeds motivation, not the other way around.",
+    "category": "Mindset",
+    "emotionalTone": "Motivational",
+    "visibility": "Public",
+    "accessLevel": "Free",
+    "download_url": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "Radical Candor and the Danger of Unexpressed Resentment",
+    "description": "I used to equate keeping the peace with being a good friend and partner. I would swallow minor grievances to avoid temporary awkwardness. What I didn’t realize was that unexpressed microscopic friction turns into deep structural resentment over time. Learning to say 'Hey, when this happened, it made me feel this way' constructively saved my closest relationships. Clear communication is a form of kindness.",
+    "category": "Relationships",
+    "emotionalTone": "Gratitude",
+    "visibility": "Public",
+    "accessLevel": "Free",
+    "download_url": "https://images.unsplash.com/photo-1521791136066-8984c169826d?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "Failing a Massive Client Taught Me the Value of Saying No",
+    "description": "I accepted a massive contract despite seeing three massive red flags during our discovery call: vague scopes, boundary-pushing late-night texts, and an overly demanding attitude. I ignored my gut because of the paycheck. The project ended in a mutual contract termination and months of mental exhaustion. That failure taught me that some money is simply too expensive to make.",
+    "category": "Mistakes Learned",
+    "emotionalTone": "Sad",
+    "visibility": "Public",
+    "accessLevel": "Premium",
+    "download_url": "https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "The Infinite Leverage of Writing Internal Documentation",
+    "description": "I used to think writing documentation was a waste of pure coding time. Then I went on a two-week vacation, and my phone blew up with 47 urgent messages because no one knew how to deploy the legacy microservices. I spent my first week back writing exhaustive markdown summaries. Since then, onboarding takes days instead of weeks, and I never get interrupted on weekends. Documenting your work scales your presence.",
+    "category": "Career",
+    "emotionalTone": "Motivational",
+    "visibility": "Public",
+    "accessLevel": "Free",
+    "download_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "An Epiphany on the Fleeting Nature of Toxic Competition",
+    "description": "I wasted the first three years of my startup life tracking every feature release of our biggest competitor, panicking at every press release they dropped. It made us build reactive, copycat products. The moment we completely blocked their social handles and focused entirely on talking directly to our own 100 passionate users, our retention tripled. Compete with your user's friction, not your rival's features.",
+    "category": "Mindset",
+    "emotionalTone": "Realization",
+    "visibility": "Public",
+    "accessLevel": "Premium",
+    "download_url": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "Slowing Down to Speed Up: The Art of Deliberate Planning",
+    "description": "Whenever a feature spec landed on my desk, I used to dive straight into typing code code code. I thought speed was measured by keystrokes. It inevitably led to hacky abstractions, refactoring hell, and missed deadlines. Now, I spend the first 40% of any complex feature block away from the IDE completely, mapping DB structures on a real whiteboard. Clear thinking yields clean execution.",
+    "category": "Personal Growth",
+    "emotionalTone": "Motivational",
+    "visibility": "Public",
+    "accessLevel": "Free",
+    "download_url": "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "How Loneliness in Leadership Taught Me Empathy",
+    "description": "Stepping into a director level position meant I could no longer casually vent to my peers over lunch without it affecting team morale or company culture. The sudden isolation was shocking. It forced me to build an external network of mentors and, more importantly, gave me deep empathy for how lonely my own bosses must have felt. Heavy is the head, but empathy makes the crown wearable.",
+    "category": "Relationships",
+    "emotionalTone": "Sad",
+    "visibility": "Public",
+    "accessLevel": "Premium",
+    "download_url": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    "title": "Never Settle For 'Good Enough' Architecture Rules",
+    "description": "We cut corners on our application authentication logic during an MVP build cycle, promising ourselves we would rewrite it 'next month'. Two years and 50,000 active users later, that technical debt caused a critical system-wide memory leak. Fixing it in a live production environment felt like performing open-heart surgery on an active marathon runner. Take the extra hour to secure your foundations early.",
+    "category": "Mistakes Learned",
+    "emotionalTone": "Realization",
+    "visibility": "Public",
+    "accessLevel": "Premium",
+    "download_url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop"
+  }
+]

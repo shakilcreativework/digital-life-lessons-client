@@ -163,7 +163,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 fill
                 unoptimized
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                className="object-fit transition-transform duration-500 group-hover:scale-105"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
               <div className="w-full h-full bg-surface flex items-center justify-center text-xs text-muted font-medium">
