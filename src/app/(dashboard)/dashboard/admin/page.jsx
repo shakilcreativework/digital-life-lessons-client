@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { FaCrown } from "react-icons/fa";
 import { HiDatabase } from "react-icons/hi";
+import { getAllUsers } from "@/lib/actions/users";
+import toast from "react-hot-toast";
+import { getAllLessons } from "@/lib/actions/lessons";
 
 // Pro Production Data Stream Matrix
 const ANALYTICS_DATASET = [
@@ -26,7 +29,7 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
 
   const usableWidth = width - padding * 2;
   const usableHeight = height - padding * 2;
-  
+
   const values = data.map(d => d.metrics);
   const maxVal = Math.max(...values, 10);
   const minVal = Math.min(...values, 0);
@@ -42,11 +45,11 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
 
   // Step 2: Build the smooth path command stream using algorithmic vector tension controls
   let pathD = `M ${points[0].x} ${points[0].y}`;
-  
+
   for (let i = 0; i < points.length - 1; i++) {
     const current = points[i];
     const next = points[i + 1];
-    
+
     // Tension control anchors for generating mathematically smooth lines
     const controlX1 = current.x + (next.x - current.x) / 2;
     const controlY1 = current.y;
@@ -64,6 +67,33 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
 
 export default function AdminDashboardLanding() {
   const { data: session, isPending } = authClient.useSession();
+  const [users, setUsers] = useState([]);
+  const [lessons, setLessons] = useState([]);
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const usersData = await getAllUsers();
+        setUsers(usersData);
+      } catch (error) {
+        toast.error("Error loading users:", error);
+      }
+    };
+
+    const loadLessons = async () => {
+      try {
+        const lessonsData = await getAllLessons();
+        setLessons(lessonsData);
+      } catch (error) {
+        toast.error("Error loading lessons:", error);
+      }
+    };
+
+    loadUsers();
+    loadLessons();
+  }, []);
+
+  // console.log(users);
 
   // Immutable view boundary configurations
   const viewBoxWidth = 700;
@@ -98,8 +128,8 @@ export default function AdminDashboardLanding() {
           </h1>
           <p className="text-xs text-muted mt-0.5">Platform diagnostic nodes & platform-wide analytics monitoring dashboard.</p>
         </div>
-        <Link 
-          href="/dashboard/admin/reported-lessons" 
+        <Link
+          href="/dashboard/admin/reported-lessons"
           className="inline-flex items-center justify-center px-4 gap-2 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
         >
           Moderate Content <HiDatabase />
@@ -110,12 +140,12 @@ export default function AdminDashboardLanding() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">Total Users</span>
-          <div className="text-2xl font-black text-foreground mt-1">1240</div>
+          <div className="text-2xl font-black text-foreground mt-1">{users?.length || 0}</div>
           <p className="text-[10px] text-emerald-500 font-medium mt-1">↑ 12% cycle delta</p>
         </div>
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">Total Public Lessons</span>
-          <div className="text-2xl font-black text-foreground mt-1">3840</div>
+          <div className="text-2xl font-black text-foreground mt-1">{lessons?.length}</div>
           <p className="text-[10px] text-muted/80 mt-1">Active catalog entries</p>
         </div>
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
@@ -137,11 +167,11 @@ export default function AdminDashboardLanding() {
             <h3 className="text-xs font-bold text-foreground">Platform Growth Trajectory</h3>
             <p className="text-[10px] text-muted mb-6">Automated continuous spline chart calculation arrays.</p>
           </div>
-          
+
           {/* Main Visual Display Frame */}
           <div className="relative w-full mt-2">
-            <svg 
-              className="w-full h-auto overflow-visible" 
+            <svg
+              className="w-full h-auto overflow-visible"
               viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
               preserveAspectRatio="xMidYMid meet"
             >
@@ -205,7 +235,7 @@ export default function AdminDashboardLanding() {
                 View All
               </Link>
             </div>
-            
+
             <div className="space-y-3">
               <div className="p-3.5 bg-surface/40 border border-border/40 rounded-xl flex justify-between items-start gap-2">
                 <div className="min-w-0">
