@@ -411,9 +411,7 @@ export default function LessonDisplayCard({ lessonData = {} }) {
                         : "bg-surface hover:bg-border/30 text-foreground border-border disabled:opacity-40 disabled:cursor-not-allowed"
                         }`}
                     >
-                      {/* <BiLike className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} /> */}
                       {isBookmarked ? <BiSolidLike className="w-4 h-4 text-secondary" /> : <BiLike className="w-4 h-4" />}
-                      {/* <BiLike className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} /> */}
                       <span>{currentFavoritesCount.toLocaleString()} Favorites</span>
                     </button>
                   </div>

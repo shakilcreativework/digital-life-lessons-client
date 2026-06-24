@@ -83,7 +83,9 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error();
 
-      toast.success(nextLikedState ? "Lesson liked ❤️" : "Like removed");
+      {
+        nextLikedState ? toast.success("Lesson liked ❤️") : toast.success("Like removed");
+      }
     } catch (error) {
       // 3. Fallback rollback state if network streaming breaks
       setIsLiked(!nextLikedState);
@@ -103,7 +105,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
     }
 
     // 1. Optimistic UI update (Instant execution)
-    const nextFavoriteState = !isLiked;
+    const nextFavoriteState = !isBookmarked;
     setIsBookmarked(nextFavoriteState);
     setFavoriteOffset((prev) => (nextFavoriteState ? prev + 1 : prev - 1));
 
@@ -118,7 +120,9 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error();
 
-      toast.success(nextFavoriteState ? "Lesson liked ❤️" : "Like removed");
+      {
+        nextFavoriteState ? toast.success("Lesson Favorites bookmark") : toast.error("Favorites bookmark removed")
+      }
     } catch (error) {
       // 3. Fallback rollback state if network streaming breaks
       setIsLiked(!nextFavoriteState);
@@ -293,11 +297,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                     : "hover:text-primary hover:bg-surface font-semibold"
                   }`}
               >
-                {isLiked ? (
-                  <AiFillHeart className="w-4 h-4 text-primary" aria-hidden="true" />
-                ) : (
-                  <AiOutlineHeart className="w-4 h-4" aria-hidden="true" />
-                )}
+                <AiFillHeart className={`w-4 h-4 ${currentLikesCount ? "fill-primary stroke-primary" : ""}`}  aria-hidden="true" />
                 <span className="text-[11px] tabular-nums">{currentLikesCount}</span>
               </button>
 
