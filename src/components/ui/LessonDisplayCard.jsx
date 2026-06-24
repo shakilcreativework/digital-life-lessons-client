@@ -25,6 +25,7 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   }, []);
 
   const { data: session } = authClient.useSession();
+  const userId = session?.user?.id || session?.user?._id;
 
   // Fully Destructured Data matching your exact schema layout
   const {
@@ -43,21 +44,17 @@ export default function LessonDisplayCard({ lessonData = {} }) {
     comments = [],
     CommentsCount = 0,
     bookmarkedBy = [],
-    bookmarkedByCount,
+    bookmarkedByCount = 0,
     creatorId = "",
     createdAt,
     updatedAt,
-  } = lessonData?.lesson;
+  } = lessonData?.lesson || {};
   const {
     totalLessonsCreated,
   } = lessonData?.authorStats;
 
   // similar lessons
-  const similarLessons = lessonData?.recommendedLessons;
-
-  // console.log(lessonData);
-  // console.log(lessonData?.recommendedLessons);
-
+  const similarLessons = lessonData?.recommendedLessons || [];
 
   // LOCK EVALUATION PATTERN
   const isAdmin = session?.user?.role === "admin";
@@ -67,10 +64,15 @@ export default function LessonDisplayCard({ lessonData = {} }) {
 
   const isLocked = isMounted && isPremiumLesson && !hasFullAccess;
 
-  // Interactive UI Reactive States
-  const [isLiked, setIsLiked] = useState(false);
+  // Interactive UI Reactive States (Lazy initialization prevents cascading render errors)
+  const [isLiked, setIsLiked] = useState(() => {
+    return userId ? likes.includes(userId) : false;
+  });
+  const [isBookmarked, setIsBookmarked] = useState(() => {
+    return userId ? bookmarkedBy.includes(userId) : false;
+  });
+
   const [likeOffset, setLikeOffset] = useState(0);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [FavoriteOffset, setFavoriteOffset] = useState(0);
   const [viewsCount] = useState(() => Math.floor(Math.random() * 10000));
 
@@ -83,11 +85,28 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   const currentLikesCount = likesCount + likeOffset;
   const currentFavoritesCount = bookmarkedByCount + FavoriteOffset;
 
-  // Sync state block reflecting LessonCard offset logic
+  // Sync state cleanly if likesCount changes from an external prop update
   const [prevLikesCount, setPrevLikesCount] = useState(likesCount);
   if (likesCount !== prevLikesCount) {
     setPrevLikesCount(likesCount);
     setLikeOffset(0);
+    setIsLiked(userId ? likes.includes(userId) : false);
+  }
+
+  // Sync state cleanly if bookmarkedByCount changes from an external prop update
+  const [prevBookmarkedCount, setPrevBookmarkedCount] = useState(bookmarkedByCount);
+  if (bookmarkedByCount !== prevBookmarkedCount) {
+    setPrevBookmarkedCount(bookmarkedByCount);
+    setFavoriteOffset(0);
+    setIsBookmarked(userId ? bookmarkedBy.includes(userId) : false);
+  }
+
+  // Handle the edge-case where the auth session initializes safely after mount
+  const [prevUserId, setPrevUserId] = useState(userId);
+  if (userId !== prevUserId) {
+    setPrevUserId(userId);
+    setIsLiked(userId ? likes.includes(userId) : false);
+    setIsBookmarked(userId ? bookmarkedBy.includes(userId) : false);
   }
 
   // Dynamic reading time counter
@@ -107,17 +126,18 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   };
 
   const getToneStyles = (tone) => {
+    if (!tone) return "bg-surface text-muted border-border";
     const standardizedTone = tone.toLowerCase();
     if (standardizedTone.includes("motivational") || standardizedTone.includes("gratitude")) {
       return "bg-primary/10 dark:bg-primary/20 text-primary border-primary/20";
     }
-    if (standardizedTone.includes("sad") || standardizedTone.includes("mistake")) {
+    if (standardizedTone.includes("sad") || standardizedTone.includes("mistake") || standardizedTone.includes("realization")) {
       return "bg-secondary/10 dark:bg-secondary/20 text-secondary border-secondary/20";
     }
     return "bg-surface text-muted border-border";
   };
 
-  // ❤️ Like Button Logic (Real-time atomic array toggle)
+  // ❤️ Like Button Logic
   const handleLikeClick = async (e) => {
     e.preventDefault();
     if (isLocked) return;
@@ -127,17 +147,15 @@ export default function LessonDisplayCard({ lessonData = {} }) {
       return;
     }
 
-    // 1. Optimistic UI update (Instant execution)
     const nextLikedState = !isLiked;
     setIsLiked(nextLikedState);
     setLikeOffset((prev) => (nextLikedState ? prev + 1 : prev - 1));
 
     try {
-      // 2. Dispatch data update to MongoDB via server routing
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/like`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session?.user.id || session?.user._id }),
+        body: JSON.stringify({ userId }),
       });
 
       const data = await response.json();
@@ -145,7 +163,6 @@ export default function LessonDisplayCard({ lessonData = {} }) {
 
       toast.success(nextLikedState ? "Lesson liked ❤️" : "Like removed");
     } catch (error) {
-      // 3. Fallback rollback state if network streaming breaks
       setIsLiked(!nextLikedState);
       setLikeOffset((prev) => (nextLikedState ? prev - 1 : prev + 1));
       toast.error("Network sync error. Could not process like action.");
@@ -154,38 +171,35 @@ export default function LessonDisplayCard({ lessonData = {} }) {
 
   // 🔖 Save to Favorites Toggle Logic
   const handleBookmarkClick = async (e) => {
-      e.preventDefault();
-      if (isLocked) return;
-  
-      if (!session?.user) {
-        toast.error("Please log in to Favorites Bookmark");
-        return;
-      }
-  
-      // 1. Optimistic UI update (Instant execution)
-      const nextFavoriteState = !isLiked;
-      setIsBookmarked(nextFavoriteState);
-      setFavoriteOffset((prev) => (nextFavoriteState ? prev + 1 : prev - 1));
-  
-      try {
-        // 2. Dispatch data update to MongoDB via server routing
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/favorite`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: session?.user.id || session?.user._id }),
-        });
-  
-        const data = await response.json();
-        if (!response.ok || !data.success) throw new Error();
-  
-        toast.success(nextFavoriteState ? "Lesson liked ❤️" : "Like removed");
-      } catch (error) {
-        // 3. Fallback rollback state if network streaming breaks
-        setIsLiked(!nextFavoriteState);
-        setLikeOffset((prev) => (nextFavoriteState ? prev - 1 : prev + 1));
-        toast.error("Network sync error. Could not process like action.");
-      }
-    };
+    e.preventDefault();
+    if (isLocked) return;
+
+    if (!session?.user) {
+      toast.error("Please log in to Favorites Bookmark");
+      return;
+    }
+
+    const nextFavoriteState = !isBookmarked;
+    setIsBookmarked(nextFavoriteState);
+    setFavoriteOffset((prev) => (nextFavoriteState ? prev + 1 : prev - 1));
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/favorite`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error();
+
+      toast.success(nextFavoriteState ? "Lesson added to Favorites 🔖" : "Favorites bookmark removed");
+    } catch (error) {
+      setIsBookmarked(!nextFavoriteState);
+      setFavoriteOffset((prev) => (nextFavoriteState ? prev - 1 : prev + 1));
+      toast.error("Network sync error. Could not process bookmark action.");
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -212,14 +226,14 @@ export default function LessonDisplayCard({ lessonData = {} }) {
     if (!commentText.trim()) return;
 
     const initialTextValue = commentText.trim();
-    setCommentText(""); // Fast UI clearing response input reset
+    setCommentText("");
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: session.user.id || session.user._id,
+          userId,
           authorName: session.user.name || "Authenticated User",
           authorImg: session.user.image || session.user.photoURL || null,
           text: initialTextValue,
@@ -229,46 +243,45 @@ export default function LessonDisplayCard({ lessonData = {} }) {
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error();
 
-      // Push backend saved comment mapping document onto stack safely
       setLocalComments((prev) => [data.comment, ...prev]);
       toast.success("Comment posted successfully!");
     } catch (error) {
-      setCommentText(initialTextValue); // Recover raw text input trace on crash
+      setCommentText(initialTextValue);
       toast.error("Failed to post comment. Verify host connectivity status.");
     }
   };
 
   // 🚩 Report / Flag Lesson Content Submission Modal
   const handleReportSubmit = async (e) => {
-  e.preventDefault();
-  if (!reportReason) {
-    toast.error("Please choose a reason category.");
-    return;
-  }
+    e.preventDefault();
+    if (!reportReason) {
+      toast.error("Please choose a reason category.");
+      return;
+    }
 
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/report`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        reporterUserId: session?.user?.id || session?.user?._id,
-        reportedUserEmail: session?.user?.email || "anonymous-reporter@domain.com",
-        reason: reportReason,
-        details: reportDetails.trim(),
-      }),
-    });
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reporterUserId: userId,
+          reportedUserEmail: session?.user?.email || "anonymous-reporter@domain.com",
+          reason: reportReason,
+          details: reportDetails.trim(),
+        }),
+      });
 
-    const data = await response.json();
-    if (!response.ok || !data.success) throw new Error();
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error();
 
-    toast.success("Report entered into lessonsReports database.");
-    setIsReportOpen(false);
-    setReportReason("");
-    setReportDetails("");
-  } catch (error) {
-    toast.error("Could not upload report telemetry data.");
-  }
-};
+      toast.success("Report entered into lessonsReports database.");
+      setIsReportOpen(false);
+      setReportReason("");
+      setReportDetails("");
+    } catch (error) {
+      toast.error("Could not upload report telemetry data.");
+    }
+  };
 
   if (!isMounted) return <div className="min-h-screen bg-background animate-pulse" />;
 
@@ -567,11 +580,13 @@ export default function LessonDisplayCard({ lessonData = {} }) {
 
         </div>
 
-        {/* recommeded lesson */}
+        {/* similar lessons */}
         <div className="space-y-5 pt-10">
-          <h1 className="text-xl font-bold">Similar Lessions: {similarLessons.length}</h1>
+          <h1 className="text-xl font-bold">Similar Lessons: {similarLessons.length}</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {similarLessons.length && similarLessons.map((similarLessonData, index) => <LessonCard key={index} lesson={similarLessonData} />)}
+            {similarLessons.length > 0 && similarLessons.map((similarLessonData, index) => (
+              <LessonCard key={index} lesson={similarLessonData} />
+            ))}
           </div>
         </div>
 
