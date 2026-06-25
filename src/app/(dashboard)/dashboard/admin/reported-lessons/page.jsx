@@ -143,7 +143,7 @@ export default function ReportedLessonsPage() {
     }
 
     return (
-        <main className="w-full min-h-screen bg-background text-foreground px-4 py-8 md:px-8 max-w-7xl mx-auto">
+        <main className="pb-20">
 
             {/* HEADER SECTION */}
             <div className="mb-8">
