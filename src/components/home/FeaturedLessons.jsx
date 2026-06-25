@@ -1,8 +1,5 @@
 "use client";
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation } from "swiper/modules";
-import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
 
 // Swiper Structural Styles
 import "swiper/css";
@@ -11,30 +8,32 @@ import Container from "../shared/Container";
 import EmptyState from "../ui/EmptyState";
 import { useEffect, useState } from "react";
 import { getAllLessons } from "@/lib/actions/lessons";
+import { getAllFeatured } from "@/lib/actions/featured";
 
 const FeaturedLessons = () => {
-    const [lessons, setLessons] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [features, setFeatured] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Define an internal async function inside the lifecycle hook
-    const loadData = async () => {
-      try {
-        const data = await getAllLessons();
-        setLessons(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    useEffect(() => {
+        const loadFeatured = async () => {
+            try {
+                const feaData = await getAllFeatured();
+                setFeatured(feaData);
+            } catch (error) {
+                console.error("Featured data load error", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    loadData();
-  }, []); // Empty array ensures this fires exactly once when the component mounts
+        loadFeatured();
+    }, []); // Empty array ensures this fires exactly once when the component mounts
 
-  if (loading) {
-    return <div className="text-center py-10">Loading insights...</div>;
-  }
+    console.log(features);
+
+    if (loading) {
+        return <div className="text-center py-10">Loading insights...</div>;
+    }
 
     return (
         <main className="py-10">
@@ -51,13 +50,13 @@ const FeaturedLessons = () => {
                 </div>
 
                 {/* 🎯 Checks data state: if missing, displays the self-contained static UI */}
-                {!lessons || lessons.length === 0 ? (
+                {!features?.data || features?.data.length === 0 ? (
                     <div className="w-full py-12 flex justify-center items-center">
                         <EmptyState />
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 ">
-                        {lessons.map((item) => (
+                        {features?.data.slice(0, 8).map((item) => (
                             <LessonCard key={item._id} lesson={item} />
                         ))}
                     </div>
