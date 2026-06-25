@@ -115,24 +115,23 @@ export default function MyLessonsPage() {
     // Action: Toggle Access Level Attributes (Free/Premium) with Premium User Gate Check
     const handleToggleAccessLevel = async (lessonId, currentAccess) => {
         if (!session?.user?.isPremium) {
-            toast.error("Access tier promotion requires a Premium Account membership upgrade.");
+            toast.error("Premium access tier modification requires an active Premium Account.");
             return;
         }
 
         const nextAccess = currentAccess === "Premium" ? "Free" : "Premium";
         try {
-            const response = await fetch(`${API_BASE}/api/lessons/${lessonId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${lessonId}/access-level`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ accessLevel: nextAccess, isPremium: nextAccess === "Premium" })
+                body: JSON.stringify({ accessLevel: nextAccess })
             });
 
-            if (!response.ok) throw new Error("Server rejected premium transformation tier adjustments.");
-
-            toast.success(`Lesson set to ${nextAccess} access format.`);
-            fetchCreatorLessons();
-        } catch (err) {
-            toast.error(err.message || "Failed to commit content access profile variables.");
+            if (!response.ok) throw new Error("Server rejected content tier adjustments.");
+            toast.success(`Access level updated to ${nextAccess}.`);
+            fetchCreatorLessons(); // Re-sync view records
+        } catch (error) {
+            toast.error(error.message);
         }
     };
 
@@ -277,8 +276,8 @@ export default function MyLessonsPage() {
                                                 <button
                                                     onClick={() => handleToggleVisibility(lesson._id, lesson.visibility || "Private")}
                                                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all active:scale-95 ${isPublic
-                                                            ? "bg-success/5 border-success/10 text-success hover:bg-success/10"
-                                                            : "bg-muted/5 border-border text-muted hover:bg-muted/10"
+                                                        ? "bg-success/5 border-success/10 text-success hover:bg-success/10"
+                                                        : "bg-muted/5 border-border text-muted hover:bg-muted/10"
                                                         }`}
                                                     aria-label={`Toggle visibility state for ${lesson.title}`}
                                                 >
@@ -291,8 +290,8 @@ export default function MyLessonsPage() {
                                                 <button
                                                     onClick={() => handleToggleAccessLevel(lesson._id, lesson.accessLevel || "Free")}
                                                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all active:scale-95 relative ${isPremiumTier
-                                                            ? "bg-secondary/5 border-secondary/10 text-secondary hover:bg-secondary/10"
-                                                            : "bg-background border-border text-foreground hover:bg-surface"
+                                                        ? "bg-secondary/5 border-secondary/10 text-secondary hover:bg-secondary/10"
+                                                        : "bg-background border-border text-foreground hover:bg-surface"
                                                         }`}
                                                     aria-label={`Toggle pricing parameter locks for ${lesson.title}`}
                                                 >
