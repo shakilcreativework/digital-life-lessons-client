@@ -5,13 +5,13 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FiSearch, 
-  FiBookOpen, 
-  FiTrash2, 
-  FiAlertTriangle, 
-  FiX, 
-  FiChevronLeft, 
+import {
+  FiSearch,
+  FiBookOpen,
+  FiTrash2,
+  FiAlertTriangle,
+  FiX,
+  FiChevronLeft,
   FiChevronRight,
   FiEye,
   FiStar,
@@ -29,7 +29,7 @@ export default function ManageLessonsPage() {
 
   // Hydration-safe state handling using a strict sync store hook pattern
   const isMounted = React.useSyncExternalStore(
-    () => () => {},
+    () => () => { },
     () => true,
     () => false
   );
@@ -38,7 +38,7 @@ export default function ManageLessonsPage() {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Advanced Multi-Tier Administrative Filtering States
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedVisibility, setSelectedVisibility] = useState("all");
@@ -59,14 +59,14 @@ export default function ManageLessonsPage() {
     try {
       setLoading(true);
       // Fetching records directly from the application's core data API stream
-      const response = await fetch(`${BASE_URL}/api/lessons`, {
+      const response = await fetch(`${BASE_URL}/api/admin/lessons`, {
         cache: "no-store",
         headers: { "Content-Type": "application/json" }
       });
-      
+
       if (!response.ok) throw new Error("Failed to pull platform lesson asset ledger.");
       const data = await response.json();
-      
+
       // Handle array unpacking depending on structure variations
       const normalizedData = Array.isArray(data) ? data : (data.lessons || []);
       setLessons(normalizedData);
@@ -97,16 +97,19 @@ export default function ManageLessonsPage() {
   // Core Mutation Request Toggles: Feature Status Toggling
   const handleToggleFeatured = async (lessonId, currentStatus) => {
     try {
-      const response = await fetch(`${BASE_URL}/api/lessons/${lessonId}`, {
+      // FIXED: Appended '/featured' to match the backend route exactly
+      const response = await fetch(`${BASE_URL}/api/admin/lessons/${lessonId}/featured`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isFeatured: !currentStatus })
       });
 
-      if (!response.ok) throw new Error("Could not update lesson feature status configuration.");
-      
+      if (!response.ok) {
+        throw new Error("Could not update lesson feature status configuration.");
+      }
+
       toast.success(!currentStatus ? "Lesson marked as Featured live entry!" : "Lesson removed from Featured status.");
-      fetchLessonsData();
+      fetchLessonsData(); // Refreshes UI state smoothly
     } catch (error) {
       toast.error(error.message || "Failed to update asset visibility tier status.");
     }
@@ -115,14 +118,14 @@ export default function ManageLessonsPage() {
   // Core Mutation Request Toggles: Content Review Review Verification
   const handleMarkReviewed = async (lessonId) => {
     try {
-      const response = await fetch(`${BASE_URL}/api/lessons/${lessonId}`, {
+      const response = await fetch(`${BASE_URL}/api/admin/lessons/${lessonId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isReviewed: true, isFlagged: false }) // Resolves flags upon review completion
       });
 
       if (!response.ok) throw new Error("Could not modify account asset review flag data.");
-      
+
       toast.success("Content marked as reviewed and cleared.");
       fetchLessonsData();
     } catch (error) {
@@ -162,10 +165,10 @@ export default function ManageLessonsPage() {
       const matchesSearch = !cleanQuery || titleMatch || categoryMatchText || authorMatch;
 
       // 2. Evaluate Explicit Selected Dropdown Filter Configurations
-      const matchesCategory = selectedCategory === "all" || 
+      const matchesCategory = selectedCategory === "all" ||
         lesson.category?.toLowerCase() === selectedCategory.toLowerCase();
-      
-      const matchesVisibility = selectedVisibility === "all" || 
+
+      const matchesVisibility = selectedVisibility === "all" ||
         (selectedVisibility === "public" && lesson.visibility !== "private") ||
         (selectedVisibility === "private" && lesson.visibility === "private");
 
@@ -215,7 +218,7 @@ export default function ManageLessonsPage() {
 
   return (
     <main className="pb-20">
-      
+
       {/* 1. AGGREGATED METRICS STATS HEADER GRID */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
         <div>
@@ -324,7 +327,7 @@ export default function ManageLessonsPage() {
 
         {/* Global Reset Switch Handle */}
         {(searchQuery || selectedCategory !== "all" || selectedVisibility !== "all" || selectedFlagStatus !== "all") && (
-          <button 
+          <button
             onClick={handleResetAllFilters}
             className="text-xs font-bold text-primary hover:underline px-2 text-center shrink-0 self-center"
           >
@@ -360,9 +363,8 @@ export default function ManageLessonsPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.2 }}
-                  className={`bg-card border rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:border-border-hover transition-colors relative ${
-                    isItemFlagged ? "border-red-500/40 dark:border-red-500/30" : "border-border"
-                  }`}
+                  className={`bg-card border rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:border-border-hover transition-colors relative ${isItemFlagged ? "border-red-500/40 dark:border-red-500/30" : "border-border"
+                    }`}
                 >
                   {/* Top Graphic Media Layer */}
                   <div className="relative h-44 w-full bg-surface">
@@ -449,11 +451,10 @@ export default function ManageLessonsPage() {
                         {/* Toggle Featured Trigger */}
                         <button
                           onClick={() => handleToggleFeatured(lesson._id, lesson.isFeatured)}
-                          className={`p-2 rounded-xl border transition-all ${
-                            lesson.isFeatured 
-                              ? "bg-primary/10 text-primary border-primary/30" 
+                          className={`p-2 rounded-xl border transition-all ${lesson.isFeatured
+                              ? "bg-primary/10 text-primary border-primary/30"
                               : "bg-surface text-muted border-border hover:text-primary hover:border-primary/40"
-                          }`}
+                            }`}
                           title={lesson.isFeatured ? "Demote from Featured Section" : "Make Feature Item"}
                           aria-label="Toggle Featured item status"
                         >
@@ -509,11 +510,11 @@ export default function ManageLessonsPage() {
           >
             <FiChevronLeft className="w-4 h-4" /> Previous
           </button>
-          
+
           <div className="text-xs text-muted font-medium">
             Page <span className="text-foreground font-bold">{currentPage}</span> of <span className="text-foreground font-bold">{totalPages}</span>
           </div>
-          
+
           <button
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
@@ -540,7 +541,7 @@ export default function ManageLessonsPage() {
                 <h3 className="text-base font-bold flex items-center gap-2 text-red-500">
                   <FiAlertTriangle className="w-5 h-5 animate-bounce" /> Purge Lesson Entry
                 </h3>
-                <button 
+                <button
                   onClick={() => setDeleteModal({ isOpen: false, targetLesson: null })}
                   className="p-1.5 hover:bg-surface rounded-lg text-muted transition-colors"
                   aria-label="Close modal dialog"
