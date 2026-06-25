@@ -52,7 +52,7 @@ const COMPARISON_FEATURES = [
 ];
 
 export default function PricingComparison({ onUpgradeClick, className = "", isPremiumUser = false }) {
-  
+
   // Reusable Access Render Indicators
   const renderStatus = (val) => {
     if (typeof val === "string") {
@@ -79,7 +79,7 @@ export default function PricingComparison({ onUpgradeClick, className = "", isPr
   return (
     <section className={`w-full transition-colors duration-300 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Typography Intro Wrapper */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -123,7 +123,7 @@ export default function PricingComparison({ onUpgradeClick, className = "", isPr
                   </td>
                 </tr>
               ))}
-              
+
               {/* Call to Action Row */}
               <tr>
                 <td className="p-6 bg-transparent" />
@@ -136,14 +136,26 @@ export default function PricingComparison({ onUpgradeClick, className = "", isPr
                       Premium Active ⭐
                     </div>
                   ) : (
-                    <BaseButton
-                    animated
-                    animatedSpanOne={'animate-ping'}
-                      onClick={onUpgradeClick}
-                      className="w-full py-3 px-6 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold tracking-wide transition-all duration-200 transform active:scale-[0.98] shadow-md shadow-primary/10 cursor-pointer"
-                    >
-                      Upgrade to Premium (৳1500)
-                    </BaseButton>
+                    <div>
+                      <form action="/api/checkout_sessions" method="POST">
+                        <section>
+                          <button type="submit" role="link"
+                            className="w-full py-3 px-6 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold tracking-wide transition-all duration-200 transform active:scale-[0.98] shadow-md shadow-primary/10 cursor-pointer"
+                          >
+                            {/* Checkout */}
+                            Upgrade to Premium (৳1500)
+                          </button>
+                          {/* <BaseButton
+                            animated
+                            animatedSpanOne={'animate-ping'}
+                            onClick={onUpgradeClick}
+                            className="w-full py-3 px-6 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold tracking-wide transition-all duration-200 transform active:scale-[0.98] shadow-md shadow-primary/10 cursor-pointer"
+                          >
+                            Upgrade to Premium (৳1500)
+                          </BaseButton> */}
+                        </section>
+                      </form>
+                    </div>
                   )}
                 </td>
               </tr>
@@ -155,8 +167,8 @@ export default function PricingComparison({ onUpgradeClick, className = "", isPr
         <div className="block md:hidden space-y-6">
           <div className="space-y-4">
             {COMPARISON_FEATURES.map((feature) => (
-              <div 
-                key={feature.id} 
+              <div
+                key={feature.id}
                 className="border border-border bg-card rounded-xl p-5 space-y-4 shadow-sm transition-colors duration-300"
               >
                 <h3 className="text-base font-bold text-foreground border-b border-border pb-2">
