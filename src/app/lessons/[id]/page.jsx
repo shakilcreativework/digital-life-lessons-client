@@ -4,12 +4,15 @@ import Container from "@/components/shared/Container";
 import { FiAlertCircle, FiArrowLeft } from "react-icons/fi";
 import Link from "next/link";
 import LessonDisplayCard from "@/components/ui/LessonDisplayCard";
+import { getUserSession } from "@/lib/core/session";
 
 /**
  * Dynamic Lesson Detail Page (Server Component)
  * Automatically receives the "id" parameter from the URL path matrix.
  */
 export default async function DynamicLessonPage({ params }) {
+  const user = await getUserSession();
+  console.log(user?.isPremium);
   // Await the params object in modern Next.js conventions
   const { id } = await params;
   
