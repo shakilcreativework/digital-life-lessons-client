@@ -300,7 +300,7 @@ export default function EditLessonPage() {
                                         name="title"
                                         type="text"
                                         value={title}
-                                        onValueChange={setTitle}
+                                        onChange={(e) => setTitle(e.target.value)} // Fixed: standard onchange handler
                                         placeholder="e.g., Implementing Monotone Spline Calculations Under React Framework Hooks"
                                         disabled={isFormDisabled}
                                         className={cn(
