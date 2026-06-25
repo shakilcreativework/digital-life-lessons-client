@@ -209,9 +209,9 @@ export default function MyFavoritesPage() {
                       transition={{ duration: 0.2, ease: "easeOut" }}
                       className="group hover:bg-surface/70 transition-colors"
                     >
-                      <td className="p-5 font-medium pr-8">{lesson.title}</td>
-                      <td className="p-5 text-sm text-muted">{lesson.category}</td>
-                      <td className="p-5 text-sm text-muted">{lesson.emotionalTone}</td>
+                      <td className="p-5 text-nowrap font-medium pr-8">{lesson.title}</td>
+                      <td className="p-5 text-nowrap text-sm text-muted">{lesson.category}</td>
+                      <td className="p-5 text-nowrap text-sm text-muted">{lesson.emotionalTone}</td>
                       <td className="p-5">
                         <div className="flex items-center gap-3 justify-end">
                           <button
