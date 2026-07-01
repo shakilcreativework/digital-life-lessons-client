@@ -1,12 +1,14 @@
 import { stripe } from '@/lib/stripe'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getUserSession } from '@/lib/core/session'
+import toast from 'react-hot-toast';
+import { getUserSession } from '@/lib/core/session';
 
 export default async function Success({ searchParams }) {
   const { session_id } = await searchParams
 
   const user = await getUserSession();
+  // console.log(user?.isPremium);
 
   if (!session_id)
     throw new Error('Please provide a valid session_id (`cs_test_...`)')
@@ -26,9 +28,32 @@ export default async function Success({ searchParams }) {
     // update the user table about the new premium
     const subInfo = {
       email: customerEmail,
-      isPremium: user?.isPremium,
+      isPremium: true,
     }
-    console.log(subInfo);
+
+    // 1. Post to your Express backend using fetch
+    try {
+      // check user is premium true then return
+      if (user?.isPremium) {
+        return redirect('/');
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscriptions`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(subInfo)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Successfully upgraded premium package!");
+      } else {
+        toast.error("Failed to upgrade.");
+      }
+    } catch (err) {
+      console.log("Something wrong", err);
+    }
 
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
