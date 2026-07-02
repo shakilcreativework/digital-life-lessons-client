@@ -91,6 +91,8 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
     };
 
     const handleFormSubmission = async (e) => {
+        const token = session?.session?.token;
+
         e.preventDefault();
         if (loading || isSubmittingExternally) return;
 
@@ -170,7 +172,8 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(payload)
             });
