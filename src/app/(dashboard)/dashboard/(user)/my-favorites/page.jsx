@@ -31,47 +31,37 @@ export default function MyFavoritesPage() {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [toneFilter, setToneFilter] = useState("All");
 
-  const sessionIdRef = useRef(null);
 
-  // Update ref when session changes (stable reference)
+  // Remove the fetchFavorites from dependencies
   useEffect(() => {
-    if (session?.user?.id) {
-      sessionIdRef.current = session.user.id;
-    }
-  }, [session?.user?.id]);
+    const fetchFavorites = async () => {
+      const userId = session?.user?.id;
+      if (!userId || sessionLoading) return;
 
-  const fetchFavorites = useCallback(async () => {
-    const userId = sessionIdRef.current;
-    if (!userId) return;
+      try {
+        setLoading(true);
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const res = await fetch(`${baseUrl}/api/favorites?userId=${userId}`);
 
-    try {
-      setLoading(true);
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const res = await fetch(`${baseUrl}/api/favorites?userId=${userId}`);
+        if (!res.ok) throw new Error("Failed to fetch favorites");
 
-      if (!res.ok) throw new Error("Failed to fetch favorites");
-
-      const data = await res.json();
-      if (data.success) {
-        setFavorites(data.data || []);
+        const data = await res.json();
+        if (data.success) {
+          setFavorites(data.data || []);
+        }
+      } catch (err) {
+        toast.error("Failed to load favorites.");
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      toast.error("Failed to load favorites.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []); // Empty deps - uses ref for session ID
+    };
 
-  // Trigger fetch when session is ready
-  useEffect(() => {
-    if (!sessionLoading && session?.user?.id) {
-      fetchFavorites();
-    }
-  }, [sessionLoading, session?.user?.id, fetchFavorites]);
+    fetchFavorites();
+  }, [session?.user?.id, sessionLoading]); // Only these two
 
   const handleRemove = async (lessonId, title) => {
-    const userId = sessionIdRef.current;
+    const userId = session?.user.id;
     if (!userId) return;
 
     try {
