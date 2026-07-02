@@ -9,6 +9,7 @@ import { fetchUserFavorites } from "@/lib/actions/favorites";
 import { getLessonByUserId } from "@/lib/actions/userLessons";
 import { FiLoader } from "react-icons/fi";
 import RecentLessons from "@/components/ui/RecentLessons";
+import toast from "react-hot-toast";
 
 // Pro Production User Contribution Dataset Matrix
 const CONTRIBUTION_DATASET = [
@@ -67,6 +68,31 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
   return { pathD, points, fillD };
 }
 
+// Put this HERE, outside the component (at the top level)
+const generateWeeklyData = (lessons) => {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  const weekly = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - i));
+
+    return {
+      day: days[date.getDay()],
+      date: date.toISOString().split('T')[0],
+      metrics: 0
+    };
+  });
+
+  lessons.forEach(lesson => {
+    if (!lesson?.createdAt) return;
+    const lessonDate = new Date(lesson.createdAt).toISOString().split('T')[0];
+    const dayEntry = weekly.find(item => item.date === lessonDate);
+    if (dayEntry) dayEntry.metrics += 1;
+  });
+
+  return weekly;
+};
+
 export default function UserDashboardLanding() {
   const { data: session, isPending } = authClient.useSession();
   const [lesson, setLesson] = useState(null);
@@ -74,6 +100,9 @@ export default function UserDashboardLanding() {
   const [loading, setLoading] = useState(true);
 
   const id = session?.user?.id;
+
+  // NEW: Weekly real data state
+  const [weeklyData, setWeeklyData] = useState([]);
 
   useEffect(() => {
     if (!id) return;
@@ -89,6 +118,10 @@ export default function UserDashboardLanding() {
 
         setLesson(lessonData);
         setFavorites(favData || []);
+
+        // Generate real weekly graph data
+        const realWeekly = generateWeeklyData(lessonData || []);
+        setWeeklyData(realWeekly);
       } catch (err) {
         toast.error("Failed to load data");
       }finally{
@@ -106,15 +139,15 @@ export default function UserDashboardLanding() {
   const viewBoxHeight = 180;
   const edgePadding = 20;
 
-  // Fully memoize path generation computations to protect engine performance metrics
+  // Use real weeklyData instead of hardcoded CONTRIBUTION_DATASET
   const { pathD, points, fillD } = useMemo(() => {
     return computeLinearSplineCoordinates(
-      CONTRIBUTION_DATASET,
+      weeklyData,           // ← Changed here
       viewBoxWidth,
       viewBoxHeight,
       edgePadding,
     );
-  }, []);
+  }, [weeklyData]);       // ← Added dependency
 
   if (isPending || loading) {
     return (
