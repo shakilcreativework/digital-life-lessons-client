@@ -6,7 +6,7 @@ import { Avatar } from "@heroui/react";
 const RealPeople = () => {
 
     return (
-        <section className="py-20 md:py-24">
+        <section className="pt-20 pb-44 md:pt-24">
             <Container>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-4 lg:gap-6">
                     <div className="mb-10 lg:mb-0 sm:col-span-2 md:col-span-3 lg:col-span-2 space-y-4">

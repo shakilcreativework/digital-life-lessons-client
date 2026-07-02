@@ -9,7 +9,7 @@ import { RiShareForwardLine } from "react-icons/ri";
 
 const InfoSesson = () => {
     return (
-        <section className="py-20 md:py-24">
+        <section className="pt-40 pb-20 md:pb-24">
             <Container>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-4">
                     <InfoCard icon={<IoBookOutline />} title={'Browse Lessons'} para={'Explore stories and lessons or mindset, career, relations, health, and more.'} />

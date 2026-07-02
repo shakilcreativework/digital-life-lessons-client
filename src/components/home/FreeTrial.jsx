@@ -7,7 +7,7 @@ import { BsArrowRight } from "react-icons/bs";
 const FreeTrial = () => {
 
     return (
-        <section className="py-20 md:py-24"
+        <section className="py-20 md:py-24 my-20 md:my-24"
             style={{
                 backgroundImage: `linear-gradient(105deg, #0b0b0c 0%, #0b0b0c 45%, rgba(11, 11, 12, 0.8) 52%, transparent 60%), url('https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=1200&q=80')`,
                 backgroundPosition: 'right center',

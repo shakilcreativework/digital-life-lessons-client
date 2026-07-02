@@ -4,7 +4,7 @@ import FreeTrial from "@/components/home/FreeTrial";
 import InfoSesson from "@/components/home/InfoSesson";
 import RealPeople from "@/components/home/RealPeople";
 import WhyLearning from "@/components/home/WhyLearning";
-import { DynamicStatsSection } from "@/components/ui/DynamicStatsSection";
+import { DynamicStatsSection } from "@/components/home/DynamicStatsSection";
 import dynamic from "next/dynamic";
 
 const HeroSlider = dynamic(() => import("@/components/home/HeroSwiper"), {
