@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { GiLaurelCrown } from "react-icons/gi";
@@ -65,6 +65,25 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
 
 export default function UserDashboardLanding() {
   const { data: session, isPending } = authClient.useSession();
+  const [lesson, setLesson] = useState(null);
+
+  const id = session?.user?.id;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/creator/lessons/${id}`);
+        const data = await res.json();
+        setLesson(data);
+      } catch (error) {
+        console.error("Error fetching lesson:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  console.log(lesson);
 
   // Unified responsive Canvas layout bounds
   const viewBoxWidth = 700;
@@ -122,14 +141,14 @@ export default function UserDashboardLanding() {
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
             Total Lessons Created
           </span>
-          <div className="text-2xl font-black text-foreground mt-1">14</div>
+          <div className="text-2xl font-black text-foreground mt-1">{lesson?.length || 0}</div>
           <p className="text-[10px] text-muted/80 mt-1">
             Your custom insight logs.
           </p>
         </div>
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
-            Total Saved (Favorites)
+            Total Saved Favorites
           </span>
           <div className="text-2xl font-black text-foreground mt-1">32</div>
           <p className="text-[10px] text-muted/80 mt-1">

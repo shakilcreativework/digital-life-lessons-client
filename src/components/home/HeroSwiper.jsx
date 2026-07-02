@@ -89,7 +89,7 @@ const HeroSlider = () => {
 ];
 
     return (
-        <section className="relative w-full bg-background transition-colors duration-300 py-10 md:py-14">
+        <section className="relative w-full h-fit bg-background transition-colors duration-300 py-10 md:py-14">
             <Swiper
                 modules={[Autoplay, Pagination]}
                 slidesPerView={1}
@@ -105,7 +105,7 @@ const HeroSlider = () => {
             >
                 {sliderData.map((slide) => (
                     <SwiperSlide key={slide.id}>
-                        <div className="max-w-7xl mx-auto px-6 md:px-12 h-full items-center grid grid-cols-1 lg:grid-cols-12 gap-8 pt-10 pb-16 lg:py-0">
+                        <div className="max-w-7xl mx-auto px-6 md:px-12 h-full md:h-fit items-center grid grid-cols-1 lg:grid-cols-12 gap-8 pt-10 pb-16 lg:py-0">
 
                             {/* Left Column: Typography Content */}
                             <div className="lg:col-span-7 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1">
