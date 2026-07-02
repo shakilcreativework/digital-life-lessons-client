@@ -9,6 +9,7 @@ import { getAllUsers } from "@/lib/actions/users";
 import toast from "react-hot-toast";
 import { getAllLessons } from "@/lib/actions/lessons";
 import { getAllLessonsReports } from "@/lib/actions/lessonsReports";
+import RecentLessons from "@/components/ui/RecentLessons";
 
 // Pro Production Data Stream Matrix
 const ANALYTICS_DATASET = [
@@ -229,7 +230,7 @@ export default function AdminDashboardLanding() {
         </div>
 
         {/* Global Overview Feed Mod */}
-        <div className="p-6 bg-card border border-border/60 rounded-2xl shadow-xs flex flex-col justify-between">
+        {/* <div className="p-6 bg-card border border-border/60 rounded-2xl shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs font-bold text-foreground">Recently Added Lessons</h3>
@@ -274,7 +275,9 @@ export default function AdminDashboardLanding() {
           <div className="text-center pt-4 border-t border-border/40 text-[10px] text-muted/60 font-medium">
             Platform diagnostics synchronized.
           </div>
-        </div>
+        </div> */}
+
+        <RecentLessons />
       </div>
     </div>
   );

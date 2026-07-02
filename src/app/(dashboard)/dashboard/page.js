@@ -8,6 +8,7 @@ import { FaPenFancy } from "react-icons/fa";
 import { fetchUserFavorites } from "@/lib/actions/favorites";
 import { getLessonByUserId } from "@/lib/actions/userLessons";
 import { FiLoader } from "react-icons/fi";
+import RecentLessons from "@/components/ui/RecentLessons";
 
 // Pro Production User Contribution Dataset Matrix
 const CONTRIBUTION_DATASET = [
@@ -257,7 +258,7 @@ export default function UserDashboardLanding() {
         </div>
 
         {/* Global Overview Feed Mod */}
-        <div className="p-6 bg-card border border-border/60 rounded-2xl shadow-xs flex flex-col justify-between">
+        {/* <div className="p-6 bg-card border border-border/60 rounded-2xl shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs font-bold text-foreground">
@@ -319,7 +320,9 @@ export default function UserDashboardLanding() {
           <div className="text-center pt-4 border-t border-border/40 text-[10px] text-muted/60 font-medium">
             Platform diagnostics synchronized.
           </div>
-        </div>
+        </div> */}
+
+        <RecentLessons />
       </div>
     </div>
   );
