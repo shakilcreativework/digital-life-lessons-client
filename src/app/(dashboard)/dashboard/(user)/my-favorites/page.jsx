@@ -6,6 +6,7 @@ import { FiHeart, FiEye, FiTrash2, FiSliders, FiLoader } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import { motion, AnimatePresence } from "framer-motion";
+import { fetchUserFavorites } from "@/lib/actions/favorites";
 
 const CATEGORIES = [
   "Personal Growth",
@@ -40,15 +41,8 @@ export default function MyFavoritesPage() {
 
       try {
         setLoading(true);
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-        const res = await fetch(`${baseUrl}/api/favorites?userId=${userId}`);
-
-        if (!res.ok) throw new Error("Failed to fetch favorites");
-
-        const data = await res.json();
-        if (data.success) {
-          setFavorites(data.data || []);
-        }
+        const data = await fetchUserFavorites(userId);
+        setFavorites(data);
       } catch (err) {
         toast.error("Failed to load favorites.");
         console.error(err);
