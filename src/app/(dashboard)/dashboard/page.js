@@ -11,20 +11,33 @@ import { FiLoader } from "react-icons/fi";
 import RecentLessons from "@/components/ui/RecentLessons";
 import toast from "react-hot-toast";
 
-// Pro Production User Contribution Dataset Matrix
-const CONTRIBUTION_DATASET = [
-  { day: "Mon", metrics: 15 },
-  { day: "Tue", metrics: 32 },
-  { day: "Wed", metrics: 24 },
-  { day: "Thu", metrics: 58 },
-  { day: "Fri", metrics: 40 },
-  { day: "Sat", metrics: 72 },
-  { day: "Sun", metrics: 88 },
-];
+// Helper: Generate last 7 days lesson contribution data
+const generateWeeklyData = (lessons) => {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const weekly = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - i));
+
+    return {
+      day: days[date.getDay()],
+      date: date.toISOString().split('T')[0],
+      metrics: 0,
+    };
+  });
+
+  lessons.forEach((lesson) => {
+    if (!lesson?.createdAt) return;
+    const lessonDate = new Date(lesson.createdAt).toISOString().split('T')[0];
+    const dayEntry = weekly.find((item) => item.date === lessonDate);
+    if (dayEntry) dayEntry.metrics += 1;
+  });
+
+  return weekly;
+};
 
 /**
- * Calculates responsive geometric coordinates to map the data stream points
- * directly onto the center vertices of the generated SVG vector path.
+ * Calculates SVG coordinates and paths for smooth spline graph
  */
 function computeLinearSplineCoordinates(data, width, height, padding) {
   if (!data || data.length === 0) return { pathD: "", points: [], fillD: "" };
@@ -37,7 +50,6 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
   const minVal = Math.min(...values, 0);
   const valueRange = maxVal - minVal;
 
-  // Step 1: Map raw values to precise viewBox coordinate markers
   const points = data.map((item, idx) => {
     const x = padding + (idx / (data.length - 1)) * usableWidth;
     const y =
@@ -47,13 +59,11 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
     return { x, y, label: item.day, value: item.metrics };
   });
 
-  // Step 2: Formulate smooth cubic bezier path configuration strings
   let pathD = `M ${points[0].x} ${points[0].y}`;
 
   for (let i = 0; i < points.length - 1; i++) {
     const current = points[i];
     const next = points[i + 1];
-
     const controlX1 = current.x + (next.x - current.x) / 2;
     const controlY1 = current.y;
     const controlX2 = current.x + (next.x - current.x) / 2;
@@ -62,54 +72,26 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
     pathD += ` C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${next.x} ${next.y}`;
   }
 
-  // Step 3: Establish enclosed background surface coordinates for gradient paint masks
   const fillD = `${pathD} L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`;
 
   return { pathD, points, fillD };
 }
 
-// Put this HERE, outside the component (at the top level)
-const generateWeeklyData = (lessons) => {
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  
-  const weekly = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - i));
-
-    return {
-      day: days[date.getDay()],
-      date: date.toISOString().split('T')[0],
-      metrics: 0
-    };
-  });
-
-  lessons.forEach(lesson => {
-    if (!lesson?.createdAt) return;
-    const lessonDate = new Date(lesson.createdAt).toISOString().split('T')[0];
-    const dayEntry = weekly.find(item => item.date === lessonDate);
-    if (dayEntry) dayEntry.metrics += 1;
-  });
-
-  return weekly;
-};
-
 export default function UserDashboardLanding() {
   const { data: session, isPending } = authClient.useSession();
+
   const [lesson, setLesson] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const id = session?.user?.id;
 
-  // NEW: Weekly real data state
-  const [weeklyData, setWeeklyData] = useState([]);
-
   useEffect(() => {
     if (!id) return;
-    
+
     const loadData = async () => {
       setLoading(true);
-
       try {
         const [lessonData, favData] = await Promise.all([
           getLessonByUserId(id),
@@ -123,8 +105,8 @@ export default function UserDashboardLanding() {
         const realWeekly = generateWeeklyData(lessonData || []);
         setWeeklyData(realWeekly);
       } catch (err) {
-        toast.error("Failed to load data");
-      }finally{
+        toast.error("Failed to load dashboard data");
+      } finally {
         setLoading(false);
       }
     };
@@ -132,22 +114,18 @@ export default function UserDashboardLanding() {
     loadData();
   }, [id]);
 
-  // console.log(favorites);
-
-  // Unified responsive Canvas layout bounds
   const viewBoxWidth = 700;
   const viewBoxHeight = 180;
   const edgePadding = 20;
 
-  // Use real weeklyData instead of hardcoded CONTRIBUTION_DATASET
   const { pathD, points, fillD } = useMemo(() => {
     return computeLinearSplineCoordinates(
-      weeklyData,           // ← Changed here
+      weeklyData,
       viewBoxWidth,
       viewBoxHeight,
-      edgePadding,
+      edgePadding
     );
-  }, [weeklyData]);       // ← Added dependency
+  }, [weeklyData]);
 
   if (isPending || loading) {
     return (
@@ -159,7 +137,7 @@ export default function UserDashboardLanding() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Workspace Banner */}
+      {/* Welcome Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2 flex-wrap">
@@ -175,10 +153,10 @@ export default function UserDashboardLanding() {
             )}
           </h1>
           <p className="text-xs text-muted mt-0.5">
-            Capture insights, review milestones, and manage your logic
-            repository workspace.
+            Capture insights, review milestones, and manage your logic repository workspace.
           </p>
         </div>
+
         <Link
           href="/dashboard/add-lesson"
           className="inline-flex items-center justify-center px-4 gap-2 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
@@ -187,7 +165,7 @@ export default function UserDashboardLanding() {
         </Link>
       </div>
 
-      {/* Workspace Core Counters */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
@@ -200,6 +178,7 @@ export default function UserDashboardLanding() {
             Your custom insight logs.
           </p>
         </div>
+
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
             Total Saved Favorites
@@ -213,8 +192,9 @@ export default function UserDashboardLanding() {
         </div>
       </div>
 
+      {/* Graph + Recent Lessons */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Dynamic Vector Brand Spline Graph Card Container */}
+        {/* Weekly Graph */}
         <div className="lg:col-span-2 p-6 bg-card border border-border/60 rounded-2xl shadow-xs flex flex-col justify-between">
           <div>
             <h3 className="text-xs font-bold text-foreground">
@@ -225,7 +205,6 @@ export default function UserDashboardLanding() {
             </p>
           </div>
 
-          {/* Main Visual Display Frame (Branded Primary Amber/Orange Tint) */}
           <div className="relative w-full mt-2">
             <svg
               className="w-full h-auto overflow-visible"
@@ -233,23 +212,13 @@ export default function UserDashboardLanding() {
               preserveAspectRatio="xMidYMid meet"
             >
               <defs>
-                {/* Brand Primary Linear Falloff Gradient Fill Mask */}
-                <linearGradient
-                  id="brandGraphAreaGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
+                <linearGradient id="brandGraphAreaGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#f97316" stopOpacity="0.22" />
                   <stop offset="100%" stopColor="#f97316" stopOpacity="0.00" />
                 </linearGradient>
               </defs>
 
-              {/* Render Smooth Area Mask Background */}
               <path d={fillD} fill="url(#brandGraphAreaGradient)" />
-
-              {/* Render Smooth Interpolated Brand Vector Outline */}
               <path
                 d={pathD}
                 fill="none"
@@ -259,12 +228,9 @@ export default function UserDashboardLanding() {
                 strokeLinejoin="round"
               />
 
-              {/* Dynamic Coordinate Target Anchor Nodes */}
               {points.map((pt, index) => (
                 <g key={index} className="group/node cursor-pointer">
-                  {/* Expanded collision touch boundary padding */}
                   <circle cx={pt.x} cy={pt.y} r="10" fill="transparent" />
-                  {/* Central Node Visual Core */}
                   <circle
                     cx={pt.x}
                     cy={pt.y}
@@ -279,7 +245,6 @@ export default function UserDashboardLanding() {
               ))}
             </svg>
 
-            {/* X-Axis Structural Alignment Labels */}
             <div className="flex justify-between px-1.5 pt-4 text-[10px] font-bold text-muted/60 tracking-wide">
               {points.map((pt, index) => (
                 <span key={index} className="w-8 text-center">
@@ -290,7 +255,7 @@ export default function UserDashboardLanding() {
           </div>
         </div>
 
-        {/* Global Overview Feed Mod */}
+        {/* Recent Lessons */}
         <RecentLessons />
       </div>
     </div>

@@ -11,7 +11,7 @@ export default function RecentLessons({ limit = 3 }) {
     const [loading, setLoading] = useState(true);
 
     const isAdmin = session?.user.role === "admin";
-    console.log(isAdmin);
+    // console.log(isAdmin);
 
     useEffect(() => {
         const fetchLessons = async () => {
