@@ -11,21 +11,42 @@ import { getAllLessons } from "@/lib/actions/lessons";
 import { getAllLessonsReports } from "@/lib/actions/lessonsReports";
 import RecentLessons from "@/components/ui/RecentLessons";
 
-// Pro Production Data Stream Matrix
-const ANALYTICS_DATASET = [
-  { day: "Mon", metrics: 12 },
-  { day: "Tue", metrics: 28 },
-  { day: "Wed", metrics: 22 },
-  { day: "Thu", metrics: 55 },
-  { day: "Fri", metrics: 42 },
-  { day: "Sat", metrics: 68 },
-  { day: "Sun", metrics: 78 },
-];
+// ==================== HELPER FUNCTIONS ====================
 
-/**
- * Generates a mathematically sound Monotone Spline Curve Path string (SVG Path)
- * ensuring the line locks directly to the center of every data point.
- */
+// Generate Platform Weekly Growth Data
+const generatePlatformWeeklyData = (allLessons) => {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const weekly = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - i));
+    return { day: days[date.getDay()], date: date.toISOString().split('T')[0], metrics: 0 };
+  });
+
+  allLessons.forEach((lesson) => {
+    if (!lesson?.createdAt) return;
+    const lessonDate = new Date(lesson.createdAt).toISOString().split('T')[0];
+    const dayEntry = weekly.find((item) => item.date === lessonDate);
+    if (dayEntry) dayEntry.metrics += 1;
+  });
+
+  return weekly;
+};
+
+// Calculate Today's New Lessons
+const calculateTodaysLessons = (lessonsArray) => {
+  if (!lessonsArray || lessonsArray.length === 0) return 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return lessonsArray.filter((lesson) => {
+    const lessonDate = new Date(lesson.createdAt);
+    return lessonDate >= today;
+  }).length;
+};
+
+// Generate SVG Spline Coordinates
 function computeLinearSplineCoordinates(data, width, height, padding) {
   if (!data || data.length === 0) return { pathD: "", points: [], fillD: "" };
 
@@ -37,62 +58,56 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
   const minVal = Math.min(...values, 0);
   const valueRange = maxVal - minVal;
 
-  // Step 1: Map raw system arrays to strict coordinate points inside the SVG view box
   const points = data.map((item, idx) => {
     const x = padding + (idx / (data.length - 1)) * usableWidth;
-    // Invert Y axis coordinates because SVG position 0 sits at the top margin
     const y = padding + usableHeight - ((item.metrics - minVal) / valueRange) * usableHeight;
     return { x, y, label: item.day, value: item.metrics };
   });
 
-  // Step 2: Build the smooth path command stream using algorithmic vector tension controls
   let pathD = `M ${points[0].x} ${points[0].y}`;
 
   for (let i = 0; i < points.length - 1; i++) {
     const current = points[i];
     const next = points[i + 1];
-
-    // Tension control anchors for generating mathematically smooth lines
     const controlX1 = current.x + (next.x - current.x) / 2;
     const controlY1 = current.y;
     const controlX2 = current.x + (next.x - current.x) / 2;
     const controlY2 = next.y;
-
     pathD += ` C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${next.x} ${next.y}`;
   }
 
-  // Step 3: Close the loop down to the bottom coordinates to create a valid fill vector area
   const fillD = `${pathD} L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`;
-
   return { pathD, points, fillD };
 }
 
+// ========================================================
+
 export default function AdminDashboardLanding() {
   const { data: session, isPending } = authClient.useSession();
+
   const [users, setUsers] = useState([]);
   const [lessons, setLessons] = useState([]);
   const [lessonsReports, setLessonsReports] = useState([]);
-  // ✅ New: Today's Lessons Count
   const [todaysLessonsCount, setTodaysLessonsCount] = useState(0);
+  const [weeklyData, setWeeklyData] = useState([]);
 
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        // 🚀 Parallel Execution: All 3 network requests fire simultaneously
         const [usersData, lessonsData, reportsData] = await Promise.all([
           getAllUsers(),
           getAllLessons(),
           getAllLessonsReports(),
         ]);
 
-        // === Calculate Today's New Lessons ===
         const todayCount = calculateTodaysLessons(lessonsData);
-        setTodaysLessonsCount(todayCount);
+        const platformWeekly = generatePlatformWeeklyData(lessonsData);
 
-        // ✅ Batched Updates: React groups these state updates into a single re-render
         setUsers(usersData);
         setLessons(lessonsData);
         setLessonsReports(reportsData);
+        setTodaysLessonsCount(todayCount);
+        setWeeklyData(platformWeekly);
       } catch (error) {
         console.error("Dashboard asset sync disruption:", error);
         toast.error("Critical failure updating global data arrays.");
@@ -100,33 +115,15 @@ export default function AdminDashboardLanding() {
     };
 
     loadDashboardData();
-
-    // Helper Function
-    const calculateTodaysLessons = (lessonsArray) => {
-      if (!lessonsArray || lessonsArray.length === 0) return 0;
-  
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Start of today (00:00:00)
-  
-      return lessonsArray.filter((lesson) => {
-        const lessonDate = new Date(lesson.createdAt);
-        return lessonDate >= today;
-      }).length;
-    };
   }, []);
 
-
-  // console.log(users);
-
-  // Immutable view boundary configurations
   const viewBoxWidth = 700;
   const viewBoxHeight = 180;
   const edgePadding = 20;
 
-  // Compute layout structures with complete memoization to save system compute cycles
   const { pathD, points, fillD } = useMemo(() => {
-    return computeLinearSplineCoordinates(ANALYTICS_DATASET, viewBoxWidth, viewBoxHeight, edgePadding);
-  }, []);
+    return computeLinearSplineCoordinates(weeklyData, viewBoxWidth, viewBoxHeight, edgePadding);
+  }, [weeklyData]);
 
   if (isPending) {
     return (
@@ -159,7 +156,7 @@ export default function AdminDashboardLanding() {
         </Link>
       </div>
 
-      {/* Admin Operations Core Data Counters */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">Total Users</span>
@@ -184,14 +181,13 @@ export default function AdminDashboardLanding() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Dynamic Vector Spline Graph Wrapper Card */}
+        {/* Platform Growth Graph */}
         <div className="lg:col-span-2 p-6 bg-card border border-border/60 rounded-2xl shadow-xs flex flex-col justify-between">
           <div>
             <h3 className="text-xs font-bold text-foreground">Platform Growth Trajectory</h3>
             <p className="text-[10px] text-muted mb-6">Automated continuous spline chart calculation arrays.</p>
           </div>
 
-          {/* Main Visual Display Frame */}
           <div className="relative w-full mt-2">
             <svg
               className="w-full h-auto overflow-visible"
@@ -199,48 +195,23 @@ export default function AdminDashboardLanding() {
               preserveAspectRatio="xMidYMid meet"
             >
               <defs>
-                {/* Linear Falloff Fill Color Mask */}
                 <linearGradient id="purpleGraphAreaGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#a855f7" stopOpacity="0.22" />
                   <stop offset="100%" stopColor="#a855f7" stopOpacity="0.00" />
                 </linearGradient>
               </defs>
 
-              {/* Render Smooth Area Mask Background */}
               <path d={fillD} fill="url(#purpleGraphAreaGradient)" />
+              <path d={pathD} fill="none" stroke="#a855f7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 
-              {/* Render Smooth Interpolated Vector Outline */}
-              <path
-                d={pathD}
-                fill="none"
-                stroke="#a855f7"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-
-              {/* Dynamic Interactive Node Anchor Points (Perfect Center Align) */}
               {points.map((pt, index) => (
                 <g key={index} className="group/node cursor-pointer">
-                  {/* Invisible structural hover canvas expander to make touch targets easier to hit */}
                   <circle cx={pt.x} cy={pt.y} r="10" fill="transparent" />
-                  {/* Core Outer Dark Stroke Ring */}
-                  <circle
-                    cx={pt.x}
-                    cy={pt.y}
-                    r="4.5"
-                    fill="#a855f7"
-                    stroke="#16161a"
-                    strokeWidth="1.5"
-                    className="transition-transform duration-200 group-hover/node:scale-125"
-                  />
-                  {/* Tooltip text array triggered cleanly on data node mouse overs */}
-                  <title>{`Value: ${pt.value} updates`}</title>
+                  <circle cx={pt.x} cy={pt.y} r="4.5" fill="#a855f7" stroke="#16161a" strokeWidth="1.5" className="transition-transform duration-200 group-hover/node:scale-125" />
                 </g>
               ))}
             </svg>
 
-            {/* X-Axis Structural Alignment Labels */}
             <div className="flex justify-between px-1.5 pt-4 text-[10px] font-bold text-muted/60 tracking-wide">
               {points.map((pt, index) => (
                 <span key={index} className="w-8 text-center">{pt.label}</span>
@@ -249,7 +220,6 @@ export default function AdminDashboardLanding() {
           </div>
         </div>
 
-        {/* Global Overview Feed Mod */}
         <RecentLessons />
       </div>
     </div>
