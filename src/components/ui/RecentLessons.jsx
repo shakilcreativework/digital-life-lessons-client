@@ -16,7 +16,8 @@ export default function RecentLessons({ limit = 3 }) {
     useEffect(() => {
         const fetchLessons = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/lessons', {
+                const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+                const res = await fetch(`${baseUrl}/api/lessons`, {
                     cache: 'no-store',
                 });
 
