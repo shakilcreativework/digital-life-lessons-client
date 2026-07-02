@@ -1,9 +1,7 @@
 "use client";
 
 
-import { motion } from "framer-motion";
 import BaseButton from "../ui/BaseButton";
-import { GiLaurelCrown } from "react-icons/gi";
 
 // 1. Core Comparison Features Matrix Data Array
 const COMPARISON_FEATURES = [
@@ -78,14 +76,14 @@ export default function PricingComparison({ onUpgradeClick, className = "", isPr
 
   return (
     <section className={`w-full transition-colors duration-300 ${className}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
 
         {/* Section Typography Intro Wrapper */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
             Compare Features & Tiers
           </h2>
-          <p className="mt-4 text-lg text-muted max-w-2xl mx-auto">
+          <p className="mt-4 text-base lg:text-lg text-muted max-w-2xl mx-auto">
             See exactly what you unlock when moving from our standard tier up to lifelong Premium membership access.
           </p>
         </div>
@@ -139,13 +137,8 @@ export default function PricingComparison({ onUpgradeClick, className = "", isPr
                     <div>
                       <form action="/api/checkout_sessions" method="POST">
                         <section>
-                          {/* <button type="submit" role="link"
-                            className="w-full py-3 px-6 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold tracking-wide transition-all duration-200 transform active:scale-[0.98] shadow-md shadow-primary/10 cursor-pointer"
-                          >
-                            Upgrade to Premium (৳1500)
-                          </button> */}
                           <BaseButton
-                            type="submit" 
+                            type="submit"
                             role="link"
                             animated
                             animatedSpanOne={'animate-ping'}
@@ -207,12 +200,16 @@ export default function PricingComparison({ onUpgradeClick, className = "", isPr
                 Premium Active ⭐
               </div>
             ) : (
-              <button
+              <BaseButton
+                type="submit"
+                role="link"
+                animated
+                animatedSpanOne={'animate-ping'}
                 onClick={onUpgradeClick}
-                className="w-full py-3.5 px-6 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold tracking-wide transition-colors duration-200 shadow-md"
+                className="w-full py-3 px-6 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold tracking-wide transition-all duration-200 transform active:scale-[0.98] shadow-md shadow-primary/10 cursor-pointer"
               >
                 Upgrade to Premium (৳1500)
-              </button>
+              </BaseButton>
             )}
           </div>
         </div>
