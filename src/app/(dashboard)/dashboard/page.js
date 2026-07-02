@@ -5,6 +5,9 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { GiLaurelCrown } from "react-icons/gi";
 import { FaPenFancy } from "react-icons/fa";
+import { fetchUserFavorites } from "@/lib/actions/favorites";
+import { getLessonByUserId } from "@/lib/actions/userLessons";
+import { FiLoader } from "react-icons/fi";
 
 // Pro Production User Contribution Dataset Matrix
 const CONTRIBUTION_DATASET = [
@@ -66,24 +69,36 @@ function computeLinearSplineCoordinates(data, width, height, padding) {
 export default function UserDashboardLanding() {
   const { data: session, isPending } = authClient.useSession();
   const [lesson, setLesson] = useState(null);
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const id = session?.user?.id;
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (!id) return;
+    
+    const loadData = async () => {
+      setLoading(true);
+
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/creator/lessons/${id}`);
-        const data = await res.json();
-        setLesson(data);
-      } catch (error) {
-        console.error("Error fetching lesson:", error);
+        const [lessonData, favData] = await Promise.all([
+          getLessonByUserId(id),
+          fetchUserFavorites(id),
+        ]);
+
+        setLesson(lessonData);
+        setFavorites(favData || []);
+      } catch (err) {
+        toast.error("Failed to load data");
+      }finally{
+        setLoading(false);
       }
     };
 
-    fetchData();
+    loadData();
   }, [id]);
 
-  console.log(lesson);
+  // console.log(favorites);
 
   // Unified responsive Canvas layout bounds
   const viewBoxWidth = 700;
@@ -100,12 +115,10 @@ export default function UserDashboardLanding() {
     );
   }, []);
 
-  if (isPending) {
+  if (isPending || loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-xs text-muted/60 animate-pulse font-medium tracking-widest uppercase">
-          Calling platform data telemetry streams...
-        </div>
+      <div className="flex h-64 items-center justify-center bg-background">
+        <FiLoader className="animate-spin text-primary text-3xl" />
       </div>
     );
   }
@@ -116,11 +129,16 @@ export default function UserDashboardLanding() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2 flex-wrap">
-            Hello, <span className="uppercase">{session?.user?.name || "Administrator"}</span>
-            {session?.user?.isPremium && <span className="flex items-center gap-2 text-purple-400 font-bold text-[10px] border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 rounded-md uppercase tracking-wider">
-              Pro{" "}
-              <GiLaurelCrown className="text-amber-500 dark:text-yellow-500 drop-shadow-[0_2px_8px_rgba(234,179,8,0.2)] dark:drop-shadow-[0_4px_12px_rgba(234,179,8,0.4)] transition-all duration-300" />
-            </span>}
+            Hello,{" "}
+            <span className="uppercase">
+              {session?.user?.name || "Administrator"}
+            </span>
+            {session?.user?.isPremium && (
+              <span className="flex items-center gap-2 text-purple-400 font-bold text-[10px] border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                Pro{" "}
+                <GiLaurelCrown className="text-amber-500 dark:text-yellow-500 drop-shadow-[0_2px_8px_rgba(234,179,8,0.2)] dark:drop-shadow-[0_4px_12px_rgba(234,179,8,0.4)] transition-all duration-300" />
+              </span>
+            )}
           </h1>
           <p className="text-xs text-muted mt-0.5">
             Capture insights, review milestones, and manage your logic
@@ -141,7 +159,9 @@ export default function UserDashboardLanding() {
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
             Total Lessons Created
           </span>
-          <div className="text-2xl font-black text-foreground mt-1">{lesson?.length || 0}</div>
+          <div className="text-2xl font-black text-foreground mt-1">
+            {lesson?.length || 0}
+          </div>
           <p className="text-[10px] text-muted/80 mt-1">
             Your custom insight logs.
           </p>
@@ -150,7 +170,9 @@ export default function UserDashboardLanding() {
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
             Total Saved Favorites
           </span>
-          <div className="text-2xl font-black text-foreground mt-1">32</div>
+          <div className="text-2xl font-black text-foreground mt-1">
+            {favorites?.length || 0}
+          </div>
           <p className="text-[10px] text-muted/80 mt-1">
             Bookmarked platform shared items.
           </p>
