@@ -91,7 +91,7 @@ export default function RecentLessons({ limit = 3 }) {
                                 <p className="font-semibold text-xs text-foreground truncate group-hover:text-orange-400 transition-colors">
                                     {lesson.title}
                                 </p>
-                                <span className="text-[10px] text-muted block mt-0.5">
+                                <span className="text-[10px] text-muted block mt-0.5 text-nowrap">
                                     {lesson.category} • {getRelativeTime(lesson.createdAt)}
                                 </span>
                             </div>

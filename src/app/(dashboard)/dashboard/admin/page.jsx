@@ -72,6 +72,8 @@ export default function AdminDashboardLanding() {
   const [users, setUsers] = useState([]);
   const [lessons, setLessons] = useState([]);
   const [lessonsReports, setLessonsReports] = useState([]);
+  // ✅ New: Today's Lessons Count
+  const [todaysLessonsCount, setTodaysLessonsCount] = useState(0);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -82,6 +84,10 @@ export default function AdminDashboardLanding() {
           getAllLessons(),
           getAllLessonsReports(),
         ]);
+
+        // === Calculate Today's New Lessons ===
+        const todayCount = calculateTodaysLessons(lessonsData);
+        setTodaysLessonsCount(todayCount);
 
         // ✅ Batched Updates: React groups these state updates into a single re-render
         setUsers(usersData);
@@ -94,7 +100,21 @@ export default function AdminDashboardLanding() {
     };
 
     loadDashboardData();
+
+    // Helper Function
+    const calculateTodaysLessons = (lessonsArray) => {
+      if (!lessonsArray || lessonsArray.length === 0) return 0;
+  
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Start of today (00:00:00)
+  
+      return lessonsArray.filter((lesson) => {
+        const lessonDate = new Date(lesson.createdAt);
+        return lessonDate >= today;
+      }).length;
+    };
   }, []);
+
 
   // console.log(users);
 
@@ -158,7 +178,7 @@ export default function AdminDashboardLanding() {
         </div>
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">Today&apos;s New Lessons</span>
-          <div className="text-2xl font-black text-foreground mt-1">45</div>
+          <div className="text-2xl font-black text-foreground mt-1">{todaysLessonsCount}</div>
           <p className="text-[10px] text-emerald-500 font-medium mt-1">Incoming user streams</p>
         </div>
       </div>
@@ -230,53 +250,6 @@ export default function AdminDashboardLanding() {
         </div>
 
         {/* Global Overview Feed Mod */}
-        {/* <div className="p-6 bg-card border border-border/60 rounded-2xl shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-bold text-foreground">Recently Added Lessons</h3>
-              <Link href="/dashboard/admin/manage-lessons" className="text-[10px] font-bold text-purple-400 hover:underline">
-                View All
-              </Link>
-            </div>
-
-            <div className="space-y-3">
-              <div className="p-3.5 bg-surface/40 border border-border/40 rounded-xl flex justify-between items-start gap-2">
-                <div className="min-w-0">
-                  <p className="font-semibold text-xs text-foreground truncate">Embracing Mistakes in Production Code</p>
-                  <span className="text-[10px] text-muted block mt-0.5">Mistakes Learned • 2 hours ago</span>
-                </div>
-                <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-bold rounded-md uppercase shrink-0">
-                  Public
-                </span>
-              </div>
-
-              <div className="p-3.5 bg-surface/40 border border-border/40 rounded-xl flex justify-between items-start gap-2">
-                <div className="min-w-0">
-                  <p className="font-semibold text-xs text-foreground truncate">Designing the Perfect Architecture with...</p>
-                  <span className="text-[10px] text-muted block mt-0.5">Career • Yesterday</span>
-                </div>
-                <span className="px-1.5 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[9px] font-bold rounded-md uppercase shrink-0">
-                  Premium
-                </span>
-              </div>
-
-              <div className="p-3.5 bg-surface/40 border border-border/40 rounded-xl flex justify-between items-start gap-2">
-                <div className="min-w-0">
-                  <p className="font-semibold text-xs text-foreground truncate">The Fine Line Between Hustle and Burnout</p>
-                  <span className="text-[10px] text-muted block mt-0.5">Mindset • 3 days ago</span>
-                </div>
-                <span className="px-1.5 py-0.5 bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 text-[9px] font-bold rounded-md uppercase shrink-0">
-                  Private
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center pt-4 border-t border-border/40 text-[10px] text-muted/60 font-medium">
-            Platform diagnostics synchronized.
-          </div>
-        </div> */}
-
         <RecentLessons />
       </div>
     </div>
