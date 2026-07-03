@@ -5,6 +5,7 @@ import { FaTrophy, FaBookmark } from 'react-icons/fa';
 // import Image from 'next/image';
 import Container from '../shared/Container';
 import { ProCard } from '../ui/ProCard';
+import LoadingData from '../ui/LoadingData';
 
 export const DynamicStatsSection = ({ type, title }) => {
     const [data, setData] = useState([]);
@@ -17,7 +18,7 @@ export const DynamicStatsSection = ({ type, title }) => {
             .catch(() => setLoading(false));
     }, [type]);
 
-    if (loading) return <div className="h-40 animate-pulse bg-surface rounded-xl" />;
+    if (loading) return <LoadingData />
     if (!data.length) return null;
 
     return (

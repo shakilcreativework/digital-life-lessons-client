@@ -1,6 +1,6 @@
 
-import ClassicLoader from "@/components/ui/ClassicLoader";
+import LoadingData from "@/components/ui/LoadingData";
 
 export default function GlobalLoading() {
-  return <ClassicLoader fullScreen={true} />;
+  return <LoadingData />
 }
