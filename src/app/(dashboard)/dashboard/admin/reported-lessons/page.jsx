@@ -17,6 +17,7 @@ import {
     FiInfo
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
+import LoadingData from "@/components/ui/LoadingData";
 
 export default function ReportedLessonsPage() {
     const { data: session, isPending } = authClient.useSession();
@@ -136,8 +137,7 @@ export default function ReportedLessonsPage() {
     if (!isMounted || isPending || !session || session.user.role !== "admin") {
         return (
             <div className="flex flex-col items-center justify-center min-h-[70vh] bg-background text-foreground">
-                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-muted mt-4 text-sm font-medium">Validating moderation dashboard clearance...</p>
+                <LoadingData text="Validating moderation dashboard clearance..." />
             </div>
         );
     }
@@ -175,8 +175,7 @@ export default function ReportedLessonsPage() {
             {/* MAIN DATA INTERFACE PANEL */}
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 bg-card rounded-2xl border border-border">
-                    <div className="w-10 h-10 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-muted text-xs mt-3 font-medium">Analyzing system moderation indexes...</p>
+                    <LoadingData text="Analyzing system moderation indexes..." />
                 </div>
             ) : filteredLessons.length === 0 ? (
                 <div className="text-center py-20 bg-card rounded-2xl border border-border shadow-sm">

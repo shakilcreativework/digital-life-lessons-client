@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
+import LoadingData from "@/components/ui/LoadingData";
 
 const USER_NAV_ITEMS = [
   { name: "Overview", path: "/dashboard", icon: "📊" },
@@ -50,9 +51,7 @@ export default function DashboardLayout({ children }) {
   if (isPending) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-xs text-muted/60 animate-pulse font-medium tracking-widest uppercase">
-          Verifying Workspace Security Core...
-        </div>
+        <LoadingData text="Verifying Workspace Security Core..." />
       </div>
     );
   }

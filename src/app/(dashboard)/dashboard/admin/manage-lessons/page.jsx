@@ -22,6 +22,7 @@ import {
   FiFlag
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
+import LoadingData from "@/components/ui/LoadingData";
 
 export default function ManageLessonsPage() {
   const { data: session, isPending } = authClient.useSession();
@@ -214,8 +215,7 @@ export default function ManageLessonsPage() {
   if (!isMounted || isPending || !session || session.user.role !== "admin") {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] bg-background text-foreground">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-muted mt-4 text-sm font-medium">Validating administrative clearances...</p>
+        <LoadingData text="Validating administrative clearances..." />
       </div>
     );
   }
@@ -343,8 +343,7 @@ export default function ManageLessonsPage() {
       {/* 3. CORE MATERIAL WORKSPACE CARDS GRID SYSTEM CONTAINER */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 bg-card rounded-2xl border border-border shadow-sm">
-          <div className="w-10 h-10 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-muted text-xs mt-3 font-medium">Fetching dashboard course records...</p>
+          <LoadingData text="Fetching dashboard course records..." />
         </div>
       ) : paginatedLessons.length === 0 ? (
         <div className="text-center py-20 px-4 bg-card rounded-2xl border border-border shadow-sm">

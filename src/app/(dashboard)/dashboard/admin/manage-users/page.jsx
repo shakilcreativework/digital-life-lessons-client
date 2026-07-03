@@ -18,6 +18,7 @@ import {
     FiBookOpen
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
+import LoadingData from "@/components/ui/LoadingData";
 
 export default function ManageUserPage() {
     const { data: session, isPending } = authClient.useSession();
@@ -154,8 +155,7 @@ export default function ManageUserPage() {
     if (!isMounted || isPending || !session || session.user.role !== "admin") {
         return (
             <div className="flex flex-col items-center justify-center min-h-[70vh] bg-background text-foreground">
-                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-muted mt-4 text-sm font-medium">Validating administrative clearances...</p>
+                <LoadingData text="Validating administrative clearances..." />
             </div>
         );
     }
@@ -208,8 +208,7 @@ export default function ManageUserPage() {
             <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-20">
-                        <div className="w-10 h-10 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
-                        <p className="text-muted text-xs mt-3">Compiling real-time table configurations...</p>
+                        <LoadingData text="Compiling real-time table configurations..." />
                     </div>
                 ) : paginatedUsers.length === 0 ? (
                     <div className="text-center py-16 px-4">
