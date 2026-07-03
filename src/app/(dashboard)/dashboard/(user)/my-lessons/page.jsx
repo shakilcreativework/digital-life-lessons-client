@@ -21,6 +21,7 @@ import {
     FiX
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
+import LoadingData from "@/components/ui/LoadingData";
 
 export default function MyLessonsPage() {
     const { data: session, isPending } = authClient.useSession();
@@ -228,8 +229,7 @@ export default function MyLessonsPage() {
             {/* RENDER BODY LAYER CONDITIONAL ASSIGNMENT */}
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-24 bg-card rounded-2xl border border-border transition-colors duration-200">
-                    <div className="w-8 h-8 border-3 border-secondary border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-xs text-muted font-bold tracking-wide mt-3 uppercase">Assembling localized workspace records...</p>
+                    <LoadingData text="Assembling localized workspace records..." />
                 </div>
             ) : filteredLessons.length === 0 ? (
                 <div className="text-center py-24 bg-card border border-border rounded-2xl shadow-sm transition-colors duration-200">

@@ -27,6 +27,7 @@ import {
 } from "react-icons/fi";
 import BaseButton from "@/components/ui/BaseButton";
 import { authClient } from "@/lib/auth-client";
+import LoadingData from "@/components/ui/LoadingData";
 
 const CATEGORIES = [
     "Personal Growth",
@@ -235,8 +236,7 @@ export default function EditLessonPage() {
     if (dataHydrating || sessionLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] text-foreground">
-                <FiLoader className="w-8 h-8 text-primary animate-spin" />
-                <p className="text-xs text-muted-foreground font-bold tracking-wider mt-3 uppercase">Hydrating Lesson Data...</p>
+                <LoadingData text="Hydrating Lesson Data..." />
             </div>
         );
     }
