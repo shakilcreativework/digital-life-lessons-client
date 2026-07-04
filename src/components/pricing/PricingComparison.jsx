@@ -200,16 +200,22 @@ export default function PricingComparison({ onUpgradeClick, className = "", isPr
                 Premium Active ⭐
               </div>
             ) : (
-              <BaseButton
-                type="submit"
-                role="link"
-                animated
-                animatedSpanOne={'animate-ping'}
-                onClick={onUpgradeClick}
-                className="w-full py-3 px-6 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold tracking-wide transition-all duration-200 transform active:scale-[0.98] shadow-md shadow-primary/10 cursor-pointer"
-              >
-                Upgrade to Premium (৳1500)
-              </BaseButton>
+              <div>
+                <form action="/api/checkout_sessions" method="POST">
+                  <section>
+                    <BaseButton
+                      type="submit"
+                      role="link"
+                      animated
+                      animatedSpanOne={'animate-ping'}
+                      onClick={onUpgradeClick}
+                      className="w-full py-3 px-6 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold tracking-wide transition-all duration-200 transform active:scale-[0.98] shadow-md shadow-primary/10 cursor-pointer"
+                    >
+                      Upgrade to Premium (৳1500)
+                    </BaseButton>
+                  </section>
+                </form>
+              </div>
             )}
           </div>
         </div>
