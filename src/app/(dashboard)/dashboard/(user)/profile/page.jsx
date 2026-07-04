@@ -21,7 +21,7 @@ export default function ProfileCard() {
         // Main Wrapper
         // Full screen center aligned layout
         // ==========================================
-        <div className="lg:py-16 flex items-center justify-center bg-background p-4">
+        <div className="lg:py-16 flex items-center justify-center bg-background">
 
             {/* Card Container */}
             <div className="w-full max-w-2xl rounded-3xl overflow-hidden bg-card border border-border shadow-xs">

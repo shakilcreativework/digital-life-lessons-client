@@ -70,7 +70,7 @@ export default function UpdateProfile() {
     };
 
     return (
-        <div className="flex items-center justify-center bg-background p-4">
+        <div className="flex items-center justify-center bg-background">
 
             {/* ==================================================
                 Main Card Container
