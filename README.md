@@ -1,5 +1,5 @@
 ## 🖼️ Preview
-![Digital Life Lessons Screenshot](https://i.ibb.co.com/REPLACE-WITH-YOUR-SCREENSHOT.png)
+![Digital Life Lessons Screenshot](https://i.ibb.co.com/wZvRfChv/digital-life-lessons.png)
 <!-- Replace the image above with a real homepage screenshot, e.g. hosted on ibb.co like your other project images -->
 
 ---
