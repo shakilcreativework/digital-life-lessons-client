@@ -105,7 +105,7 @@ const HeroSlider = () => {
             >
                 {sliderData.map((slide) => (
                     <SwiperSlide key={slide.id}>
-                        <div className="max-w-7xl mx-auto h-full md:h-fit items-center grid grid-cols-1 lg:grid-cols-12 gap-8 pt-10 pb-16 lg:py-0">
+                        <div className="max-w-350 px-4 sm:px-5 lg:px-6 2xl:px-0 mx-auto h-full md:h-fit items-center grid grid-cols-1 lg:grid-cols-12 gap-8 pt-10 pb-16 lg:py-0">
 
                             {/* Left Column: Typography Content */}
                             <div className="lg:col-span-7 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1">
